@@ -41,7 +41,9 @@ $router->post('#^/etat/([0-9]+)/delete$#', [Controllers\EtatController::class, '
 $router->get('#^/fraisForfait/([0-9]+)$#', [Controllers\FraisForfaitController::class, 'show']);
 $router->get('/fraisForfait',       [Controllers\FraisForfaitController::class, 'index']);
 
-$router->get('/fraisForfait/',       [Controllers\FraisForfaitController::class, 'index']);
+$router->get('/fraisForfait/',       [Controllers\FraisForfaitController::class, 'index']);// en ordre :  show, index, create, store
+$router->get ('/fraisForfait/create',       [Controllers\FraisForfaitController::class, 'create']);
+$router->post('/fraisForfait/create',       [Controllers\FraisForfaitController::class, 'store']);
 
 
 

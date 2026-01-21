@@ -56,5 +56,57 @@ final class FraisForfaitController extends Controller
     unset($_SESSION['flash']);
 }
 
+// l'affichage du formulaire.
+
+public function create(): void
+    {
+        if (empty($_SESSION['uid'])) $this->redirect('/');// redirect, render= fichier index qui redirige
+
+        $this->render('fraisForfait/create', [ // va afficher la vue
+            'title'   => 'Créer un frais',
+            'message' => $_SESSION['flash'] ?? '', // flash= erreur
+            'old'     => $_SESSION['old'] ?? ['libelle' => ''],
+            'errors'  => $_SESSION['errors'] ?? [],
+        ]);
+
+        unset($_SESSION['flash'], $_SESSION['old'], $_SESSION['errors']); //unset= est ce que vide
+    }
+// envoyer a la base de donné.
+    public function store(): void
+{
+    if (empty($_SESSION['uid'])) $this->redirect('/');
+
+    $libelle = trim($_POST['libelle'] ?? '');// trim verif si chaine d caractere avec caractere speciaux
+    $montant = $_POST['montant'] ?? '';//post recup le champ du form
+
+    if ($libelle === '') {
+        $errors['libelle'] = 'Le libellé est obligatoire.';
+    } elseif (mb_strlen($libelle) > 100) {
+        $errors['libelle'] = 'Le libellé ne doit pas dépasser 100 caractères.';
+    }
+
+     if ($montant === '') {
+        $errors['montant'] = 'Le montant est obligatoire.';
+    } elseif ( $montant <= 0) {
+        $errors['montant'] = 'Le montant ne doit pas etre negatif.';
+    }
+
+    if (!empty($errors)) {
+        $_SESSION['errors'] = $errors;
+        $_SESSION['old']    = ['libelle' => $libelle,'montant'=> $montant];
+        $_SESSION['flash']  = 'Merci de corriger les erreurs du formulaire.';
+        $this->redirect('./fraisForfait/create');
+    }
+
+    try { // si ca marche
+        $id = \Models\FraisForfait::create($libelle,$montant); 
+        $_SESSION['flash'] = 'Frais créé avec succès.';
+        $this->redirect('./fraisForfait/' . $id);
+    } catch (\Throwable $e) { // si ca marche pas
+        $_SESSION['flash'] = 'Impossible de créer le frais.';
+        $this->redirect('./fraisForfait');
+    }
+}
+
 
 }
