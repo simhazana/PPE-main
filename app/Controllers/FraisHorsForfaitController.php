@@ -2,9 +2,9 @@
 namespace Controllers;
 
 use Core\Controller;
-use Models\FraisForfait;
+use Models\FraisHorsForfait;
 
-final class FraisForfaitController extends Controller
+final class FraisHorsForfaitController extends Controller
 {
     public function index(): void
     {
@@ -13,17 +13,17 @@ final class FraisForfaitController extends Controller
         }
 
         try {
-            $fraisForfait = FraisForfait::findAll(); // appel statique aligné avec le modèle
+            $fraisHorsForfait = FraisHorsForfait::findAll(); // appel statique aligné avec le modèle
         } catch (\Throwable $e) {
             // Pour déboguer, active temporairement la ligne suivante :
-            error_log($e->getMessage());
+            //error_log($e->getMessage());
             $_SESSION['flash'] = 'Impossible de charger les frais forfait.';
-            $fraisForfait = [];
+            $fraisHorsForfait = [];
         }
 
-        $this->render('fraisForfait/index', [
-            'title'   => 'Liste des frais forfait',
-            'fraisForfait'   => $fraisForfait,
+        $this->render('fraisHorsForfait/index', [
+            'title'   => 'Liste des frais hors forfait',
+            'fraisHorsForfait'   => $fraisHorsForfait,
             'message' => $_SESSION['flash'] ?? '',
         ]);
         unset($_SESSION['flash']);
@@ -36,21 +36,21 @@ final class FraisForfaitController extends Controller
     $id = (int)$id;
 
     try {
-        $fraisForfait = \Models\FraisForfait::findById($id);
-        if (!$fraisForfait) {
+        $fraisHorsForfait = \Models\FraisHorsForfait::findById($id);
+        if (!$fraisHorsForfait) {
             http_response_code(404);
-            $_SESSION['flash'] = 'frais forfait introuvable.';
-            $this->redirect('/fraisForfait');
+            $_SESSION['flash'] = 'frais hors forfait introuvable.';
+            $this->redirect('/fraisHorsForfait');
         }
     } catch (\Throwable $e) {
         // error_log($e->getMessage()); // utile en debug
-        $_SESSION['flash'] = 'Erreur lors du chargement de le frais forfait.';
-        $fraisForfait = null;
+        $_SESSION['flash'] = 'Erreur lors du chargement du frais hors forfait.';
+        $fraisHorsForfait = null;
     }
 
-    $this->render('fraisForfait/show', [
+    $this->render('fraisHorsForfait/show', [
         'title' => 'Détail du frais forfait',
-        'fraisForfait'  => $fraisForfait,
+        'fraisHorsForfait'  => $fraisHorsForfait,
         'message' => $_SESSION['flash'] ?? '',
     ]);
     unset($_SESSION['flash']);
@@ -62,7 +62,7 @@ public function create(): void
     {
         if (empty($_SESSION['uid'])) $this->redirect('/');// redirect, render= fichier index qui redirige
 
-        $this->render('fraisForfait/create', [ // va afficher la vue
+        $this->render('fraisHorsForfait/create', [ // va afficher la vue
             'title'   => 'Créer un frais',
             'message' => $_SESSION['flash'] ?? '', // flash= erreur
             'old'     => $_SESSION['old'] ?? ['libelle' => ''],
@@ -78,7 +78,8 @@ public function store(): void
     if (empty($_SESSION['uid'])) $this->redirect('/');
 
     $libelle = trim($_POST['libelle'] ?? '');// trim verif si chaine d caractere avec caractere speciaux
-    $montant = $_POST['montant'] ?? '';//post recup le champ du form
+    $montant = $_POST['montant'] ?? '';//post recup le champ du 
+    $date = $_POST['date'] ?? '';
 
     if ($libelle === '') {
         $errors['libelle'] = 'Le libellé est obligatoire.';
@@ -91,23 +92,29 @@ public function store(): void
     } elseif ( $montant <= 0) {
         $errors['montant'] = 'Le montant ne doit pas etre negatif.';
     }
+     if ($date === '') {
+        $errors['date'] = 'La date est obligatoire.';
+    } elseif ( $date <= 0) {
+        $errors['date'] = 'La date ne doit pas etre correcte.';
+    }
 
     if (!empty($errors)) {
         $_SESSION['errors'] = $errors;
-        $_SESSION['old']    = ['libelle' => $libelle,'montant'=> $montant];
+        $_SESSION['old']    = ['libelle' => $libelle,'montant'=> $montant,'date'=>$montant];
         $_SESSION['flash']  = 'Merci de corriger les erreurs du formulaire.';
-        $this->redirect('./fraisForfait/create');
+        $this->redirect('./fraisHorsForfait/create');
     }
 
     try { // si ca marche
-        $id = \Models\FraisForfait::create($libelle,$montant); 
-        $_SESSION['flash'] = 'Frais créé avec succès.';
-        $this->redirect('./fraisForfait/' . $id);
+        $id = \Models\FraisHorsForfait::create($libelle,$montant,$date); 
+        $_SESSION['flash'] = 'Frais  créé avec succès.';
+        $this->redirect('./fraisHorsForfait/' . $id);
     } catch (\Throwable $e) { // si ca marche pas
         $_SESSION['flash'] = 'Impossible de créer le frais.';
-        $this->redirect('./fraisForfait');
+        $this->redirect('./fraisHorsForfait');
     }
 }
+
   // ---------- EDIT (GET) ----------
 public function edit($id): void
 {
@@ -116,30 +123,29 @@ public function edit($id): void
     $id = (int)$id;
 
     try {
-        $fraisForfait = \Models\FraisForfait::findById($id);
-        if (!$fraisForfait) {
-            $_SESSION['flash'] = "Frais forfait introuvable.";
-            $this->redirect('./fraisForfait');
+        $fraisHorsForfait = \Models\FraisHorsForfait::findById($id);
+        if (!$fraisHorsForfait) {
+            $_SESSION['flash'] = "Frais hors forfait introuvable.";
+            $this->redirect('./fraisHorsForfait');
         }
     } catch (\Throwable $e) {
-        $_SESSION['flash'] = "Erreur lors du chargement du frais forfait.";
-        $this->redirect('./fraisForfait');
+        $_SESSION['flash'] = "Erreur lors du chargement du frais hors forfait.";
+        $this->redirect('./fraisHorsForfait');
     }
 
     // remplissage auto
-    $old = $_SESSION['old'] ?? ['libelle' => $fraisForfait['libelle'],['montant' => $fraisForfait['montant']]];
+    $old = $_SESSION['old'] ?? ['libelle' => $fraisHorsForfait['libelle']];
+    /*$old = $_SESSION['old'] ?? ['montant' => $montant['montant']];*/
+    /*$old = $_SESSION['old'] ?? ['date' => $date['date']];*/
 
-
-    $this->render('fraisForfait/edit', [
-        'title'   => 'Modifier un frais forfait',
-        'fraisForfait'  => $fraisForfait,
+    $this->render('fraisHorsForfait/edit', [
+        'title'   => 'Modifier un frais hors forfait',
+        'fraisHorsForfait'  => $fraisHorsForfait,
         /*'montant' => $montant,*/
         'old'     => $old,
         'errors'  => $_SESSION['errors'] ?? [],
         'message' => $_SESSION['flash'] ?? ''
     ]);
-
-
 
     unset($_SESSION['old'], $_SESSION['errors'], $_SESSION['flash']);
 }
@@ -147,12 +153,12 @@ public function edit($id): void
 // ---------- UPDATE (POST) ----------
 public function update($id): void
 {
-
     if (empty($_SESSION['uid'])) $this->redirect('/');
 
     $id = (int)$id;
     $libelle = trim($_POST['libelle'] ?? '');
-    $montant = trim($_POST['montant'] ?? '');
+    $montant = ($_POST['montant'] ?? '');
+    $date = ($_POST['date'] ?? '');
 
     $errors = [];
 
@@ -164,23 +170,40 @@ public function update($id): void
         $errors['montant'] = 'Le montant est obligatoire.';
     }
 
+     if ($montant === '') {
+        $errors['date'] = 'La date est obligatoire.';
+    }
+
     if ($errors) {
         $_SESSION['errors'] = $errors;
-        $_SESSION['old'] = ['libelle' => $libelle,'montant' => $montant];
+        $_SESSION['old'] = ['libelle' => $libelle];
         $_SESSION['flash'] = "Merci de corriger les erreurs.";
-        $this->redirect("./fraisForfait/$id/edit");
+        $this->redirect("./fraisHorsForfait/$id/edit");
     }
 
+    if ($errors) {
+        $_SESSION['errors'] = $errors;
+        $_SESSION['old'] = ['montant' => $montant];
+        $_SESSION['flash'] = "Merci de corriger les erreurs.";
+        $this->redirect("./fraisHorsForfait/$id/edit");
+    }
 
+    if ($errors) {
+        $_SESSION['errors'] = $errors;
+        $_SESSION['old'] = ['date' => $date];
+        $_SESSION['flash'] = "Merci de corriger les erreurs.";
+        $this->redirect("./fraisHorsForfait/$id/edit");
+    }
 
     try {
-        \Models\FraisForfait::update($id, $libelle, $montant);
+        \Models\FraisHorsForfait::update($id, $libelle, $montant,$date);
         $_SESSION['flash'] = "Frais Forfait modifié avec succès.";
-        $this->redirect("./fraisForfait/$id");
+        $this->redirect("./fraisHorsForfait/$id");
     } catch (\Throwable $e) {
         $_SESSION['flash'] = "Erreur lors de la mise à jour.";
-        $this->redirect("./fraisForfait");
+        $this->redirect("./fraisHorsForfait");
     }
 }
+
 
 }

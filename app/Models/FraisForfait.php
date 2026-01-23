@@ -20,5 +20,22 @@ final class FraisForfait
         $row = $st->fetch();
         return $row ?: null;
     }
-    
+
+    public static function create(string $libelle, string $montant): int
+    {
+        $pdo = Database::get();
+        $st  = $pdo->prepare('INSERT INTO fraisForfait (libelle, montant) VALUES (?,?)');
+        $st->execute([$libelle,$montant]);
+        return (int)$pdo->lastInsertId(); // ajouter un id +1
+    } 
+
+   public static function update(int $id, string $libelle,string $montant): bool
+   {
+    $stmt->execute();
+
+        $pdo = Database::get();
+        $st  = $pdo->prepare('UPDATE fraisForfait SET libelle = ?, montant= ? WHERE id = ?');
+        return $st->execute([$libelle, $id, $montant]);
+}
+
 }

@@ -21,13 +21,13 @@
         <a class="button" href="./logout">Se déconnecter</a>
     </div>
 
-    <a class="button" href="./fraisForfait/create">➕ Ajouter un frais forfait</a>
+    <a class="button" href="./fraisHorsForfait/create">➕ Ajouter un frais forfait</a>
 
     <?php if (!empty($message)): ?>
         <div class="flash"><?= htmlspecialchars($message) ?></div>
     <?php endif; ?>
 
-    <?php if (empty($fraisForfait)): ?>
+    <?php if (empty($fraisHorsForfait)): ?>
         <p>Aucun état trouvé.</p>
     <?php else: ?>
         <table>
@@ -36,19 +36,21 @@
                     <th>ID</th>
                     <th>Libellé</th>
                     <th>Montant</th>
+                    <th>Date</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($fraisForfait as $frais): ?>
+                <?php foreach ($fraisHorsForfait as $frais): ?>
                     <tr>
                       <td><?= htmlspecialchars((string)$frais['id']) ?></td>
                         <td><?= htmlspecialchars((string)$frais['libelle']) ?></td>
-                        <td><?= htmlspecialchars((string)$frais['montant']) ?></td> 
+                        <td><?= htmlspecialchars((string)$frais['montant']) ?></td>
+                        <td><?= htmlspecialchars((string)$frais['date']) ?></td> 
                                      <td class="actions">
-                            <a href="./fraisForfait/<?= urlencode($frais['id']) ?>">Voir</a>
-                            <a href="./fraisForfait/<?= urlencode($frais['id']) ?>/edit">Modifier</a>
-                             <form action="./fraisForfait/<?= urlencode($frais['id']) ?>/delete"
+                            <a href="./fraisHorsForfait/<?= urlencode($frais['id']) ?>">Voir</a>
+                            <a href="./fraisHorsForfait/<?= urlencode($frais['id']) ?>/edit">Modifier</a>
+                             <form action="./fraisHorsForfait/<?= urlencode($frais['id']) ?>/delete"
                              method="post"
                              style="display:inline"
                              onsubmit="return confirm('Supprimer ce frais forfait ? Cette action est définitive.');">

@@ -14,7 +14,7 @@ final class AuthController extends Controller {
         ]);
         unset($_SESSION['flash']);
     }
-
+  
     public function doLogin(): void {
         if (!$this->checkCsrf($_POST['csrf'] ?? null)) { http_response_code(400); exit('CSRF'); }
 
@@ -51,4 +51,7 @@ final class AuthController extends Controller {
         session_destroy();
         $this->redirect('/');
     }
+   
+    
+
 }
