@@ -72,8 +72,12 @@ public function create(): void
         unset($_SESSION['flash'], $_SESSION['old'], $_SESSION['errors']); //unset= est ce que vide
     }
 // envoyer a la base de donné.
+<<<<<<< HEAD
 
 public function store(): void
+=======
+    public function store(): void
+>>>>>>> 8006f8d566d1963bd768a29489a99fd709141a28
 {
     if (empty($_SESSION['uid'])) $this->redirect('/');
 
@@ -108,6 +112,7 @@ public function store(): void
         $this->redirect('./fraisForfait');
     }
 }
+<<<<<<< HEAD
   // ---------- EDIT (GET) ----------
 public function edit($id): void
 {
@@ -182,5 +187,8 @@ public function update($id): void
         $this->redirect("./fraisForfait");
     }
 }
+=======
+
+>>>>>>> 8006f8d566d1963bd768a29489a99fd709141a28
 
 }

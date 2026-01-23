@@ -47,6 +47,7 @@ $router->get('/fraisForfait/',       [Controllers\FraisForfaitController::class,
 $router->get ('/fraisForfait/create',       [Controllers\FraisForfaitController::class, 'create']);
 $router->post('/fraisForfait/create',       [Controllers\FraisForfaitController::class, 'store']);
 
+<<<<<<< HEAD
 $router->get ('#^/fraisForfait/([0-9]+)/edit$#', [Controllers\FraisForfaitController::class, 'edit']);
 $router->post('#^/fraisForfait/([0-9]+)/edit$#', [Controllers\FraisForfaitController::class, 'update']);
 
@@ -54,6 +55,8 @@ $router->get('#^/visiteur/([0-9]+)$#', [Controllers\VisiteurController::class, '
 $router->get('/visiteur',       [Controllers\VisiteurController::class, 'index']);// copier pour visiteur
 
 $router->get('/visiteur/',       [Controllers\VisiteurController::class, 'index']);// copier pour visiteur
+=======
+>>>>>>> 8006f8d566d1963bd768a29489a99fd709141a28
 
 
 ///

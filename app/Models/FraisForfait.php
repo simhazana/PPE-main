@@ -27,6 +27,7 @@ final class FraisForfait
         $st  = $pdo->prepare('INSERT INTO fraisForfait (libelle, montant) VALUES (?,?)');
         $st->execute([$libelle,$montant]);
         return (int)$pdo->lastInsertId(); // ajouter un id +1
+<<<<<<< HEAD
     } 
 
    public static function update(int $id, string $libelle,string $montant): bool
@@ -38,4 +39,7 @@ final class FraisForfait
         return $st->execute([$libelle, $id, $montant]);
 }
 
+=======
+    }  
+>>>>>>> 8006f8d566d1963bd768a29489a99fd709141a28
 }
