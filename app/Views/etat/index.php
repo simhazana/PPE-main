@@ -21,9 +21,9 @@
 <body>
     <div class="topbar">
         <h1 style="margin:0;">Liste des États</h1>
-        <a class="button" href="/dashboard">Dashboard</a>
-        <a class="button" href="/logout">Se déconnecter</a>
-        <a class="button" href="/fraisForfait">Frais forfait</a>
+        <a class="button" href="./dashboard">Dashboard</a>
+        <a class="button" href="./logout">Se déconnecter</a>
+        <a class="button" href="./fraisForfait">Frais forfait</a>
     </div>
 
     <a class="button" href="./etat/create">➕ Ajouter un état</a>

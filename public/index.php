@@ -38,6 +38,8 @@ $router->post('#^/etat/([0-9]+)/edit$#', [Controllers\EtatController::class, 'up
 
 // DELETE
 $router->post('#^/etat/([0-9]+)/delete$#', [Controllers\EtatController::class, 'delete']);
+$router->post('#^/fraisForfait/([0-9]+)/delete$#', [Controllers\FraisForfaitcontroller::class, 'delete']);
+$router->post('#^/fraisHorsForfait/([0-9]+)/delete$#', [Controllers\FraisHorsForfaitcontroller::class, 'delete']);
 
 
 $router->get('#^/fraisForfait/([0-9]+)$#', [Controllers\FraisForfaitController::class, 'show']);
@@ -47,7 +49,7 @@ $router->get('/fraisForfait/',       [Controllers\FraisForfaitController::class,
 $router->get ('/fraisForfait/create',       [Controllers\FraisForfaitController::class, 'create']);
 $router->post('/fraisForfait/create',       [Controllers\FraisForfaitController::class, 'store']);
 
-<<<<<<< HEAD
+
 $router->get ('#^/fraisForfait/([0-9]+)/edit$#', [Controllers\FraisForfaitController::class, 'edit']);
 $router->post('#^/fraisForfait/([0-9]+)/edit$#', [Controllers\FraisForfaitController::class, 'update']);
 
@@ -55,8 +57,7 @@ $router->get('#^/visiteur/([0-9]+)$#', [Controllers\VisiteurController::class, '
 $router->get('/visiteur',       [Controllers\VisiteurController::class, 'index']);// copier pour visiteur
 
 $router->get('/visiteur/',       [Controllers\VisiteurController::class, 'index']);// copier pour visiteur
-=======
->>>>>>> 8006f8d566d1963bd768a29489a99fd709141a28
+
 
 
 ///
@@ -162,6 +163,36 @@ if (preg_match('#^' . preg_quote($scriptDir, '#') . '/etat/([0-9]+)/delete$#', $
     } else {
         // On ne fait rien en GET sur /delete, on renvoie vers la liste
         header('Location: /etat');
+    }
+    exit;
+}
+
+// Fallback manuel pour /fraisForfait/{id}/delete
+if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fraisForfait/([0-9]+)/delete$#', $_SERVER['REQUEST_URI'] ?? '', $m)
+    || preg_match('#^/fraisForfait/([0-9]+)/delete$#', $requestPath, $m)) {
+
+    $id = (int)$m[1];
+
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+        (new \Controllers\FraisForfaitController)->delete($id);
+    } else {
+        // On ne fait rien en GET sur /delete, on renvoie vers la liste
+        header('Location: /fraisForfait');
+    }
+    exit;
+}
+
+// Fallback manuel pour /fraisHorsForfait/{id}/delete
+if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fraisHorsForfait/([0-9]+)/delete$#', $_SERVER['REQUEST_URI'] ?? '', $m)
+    || preg_match('#^/fraisHorsForfait/([0-9]+)/delete$#', $requestPath, $m)) {
+
+    $id = (int)$m[1];
+
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+        (new \Controllers\FraisHorsForfaitController)->delete($id);
+    } else {
+        // On ne fait rien en GET sur /delete, on renvoie vers la liste
+        header('Location: /fraisHorsForfait');
     }
     exit;
 }
