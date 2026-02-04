@@ -52,15 +52,14 @@ $router->post('/fraisForfait/create',       [Controllers\FraisForfaitController:
 
 $router->get ('#^/fraisForfait/([0-9]+)/edit$#', [Controllers\FraisForfaitController::class, 'edit']);
 $router->post('#^/fraisForfait/([0-9]+)/edit$#', [Controllers\FraisForfaitController::class, 'update']);
-
+/*
 $router->get('#^/visiteur/([0-9]+)$#', [Controllers\VisiteurController::class, 'show']);// copier pour visiteur
 $router->get('/visiteur',       [Controllers\VisiteurController::class, 'index']);// copier pour visiteur
 
 $router->get('/visiteur/',       [Controllers\VisiteurController::class, 'index']);// copier pour visiteur
+*/
 
-
-
-//frais hors forfait
+///
 $router->get('#^/fraisHorsForfait/([0-9]+)$#', [Controllers\FraisHorsForfaitController::class, 'show']);
 $router->get('/fraisHorsForfait',       [Controllers\FraisHorsForfaitController::class, 'index']);
 
@@ -72,11 +71,11 @@ $router->post('#^/fraisHorsForfait/([0-9]+)/edit$#', [Controllers\FraisHorsForfa
 
 //visiteur
 $router->get('#^/visiteur/([0-9]+)$#', [Controllers\VisiteurController::class, 'show']);
-$router->get('/visiteur',       [Controllers\visiteurController::class, 'index']);
+$router->get('/visiteur',       [Controllers\VisiteurController::class, 'index']);
 
 $router->get('/visiteur/',       [Controllers\VisiteurController::class, 'index']);// en ordre :  show, index, create, store
 $router->get ('/visiteur/create',       [Controllers\VisiteurController::class, 'create']);
-$router->post('/visiteur/create',       [Controllers\visiteurController::class, 'store']);
+$router->post('/visiteur/create',       [Controllers\VisiteurController::class, 'store']);
 ///
 
 
