@@ -54,14 +54,14 @@
                 <?php foreach ($visiteur as $vis): ?>
                     <tr>
                         <td><?= htmlspecialchars((string)$vis['id']) ?></td>
-                        <td><?= htmlspecialchars((string)$vis['Nom']) ?></td> <!--a changer sur tt la liste-->
-                        <td><?= htmlspecialchars((string)$vis['Prenom']) ?></td>
-                        <td><?= htmlspecialchars((string)$vis['Adresse']) ?></td>
-                        <td><?= htmlspecialchars((string)$vis['Ville']) ?></td>
-                        <td><?= htmlspecialchars((string)$vis['Cp']) ?></td>
-                        <td><?= htmlspecialchars((string)$vis['Date_embauche']) ?></td>
-                        <td><?= htmlspecialchars((string)$vis['Login']) ?></td>
-                        <td><?= htmlspecialchars((string)$vis['Mdp']) ?></td>
+                        <td><?= htmlspecialchars((string)$vis['nom']) ?></td> <!--a changer sur tt la liste-->
+                        <td><?= htmlspecialchars((string)$vis['prenom']) ?></td>
+                        <td><?= htmlspecialchars((string)$vis['adresse']) ?></td>
+                        <td><?= htmlspecialchars((string)$vis['ville']) ?></td>
+                        <td><?= htmlspecialchars((string)$vis['cp']) ?></td>
+                        <td><?= htmlspecialchars((string)$vis['date_embauche']) ?></td>
+                        <td><?= htmlspecialchars((string)$vis['login']) ?></td>
+                        <td><?= htmlspecialchars((string)$vis['mdp']) ?></td>
                         <td class="actions">
                             <a href="./visiteur/<?= urlencode($vis['id']) ?>">Voir</a>
                             <a href="./visiteur/<?= urlencode($vis['id']) ?>/edit">Modifier</a>

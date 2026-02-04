@@ -10,13 +10,13 @@ final class Visiteur
     public static function findAll(): array
     {
         $pdo = Database::get();
-        $st  = $pdo->query('SELECT id, Nom, Prenom, Adresse, Ville, Cp, Date_embauche, Login, Mdp FROM  visiteur ORDER BY id');
+        $st  = $pdo->query('SELECT id,nom,prenom,adresse,ville,cp,date_embauche,login,mdp FROM  visiteur ORDER BY id');
         return $st->fetchAll(); // FETCH_ASSOC déjà par défaut via Database
     }
     public static function findById(int $id): ?array
     {
         $pdo = Database::get();
-        $st  = $pdo->prepare('SELECT id, Nom, Prenom, Adresse, Ville, Cp, Date_embauche, Login, Mdp  FROM  visiteur WHERE id = :id');
+        $st  = $pdo->prepare('SELECT id,nom,prenom,adresse,ville,cp,date_embauche,login,mdp  FROM  visiteur WHERE id = :id');
         $st->execute(['id' => $id]);
         $row = $st->fetch();
         return $row ?: null;

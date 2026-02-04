@@ -11,9 +11,9 @@
     </style>
 </head>
 <body>
-    <h1>Détail du visiteur</h1>
+    <h1>Détail des visiteurs</h1>
 
-        <?php if (!empty($message)): ?>
+    <?php if (!empty($message)): ?>
         <div class="flash"><?= htmlspecialchars($message) ?></div>
     <?php endif; ?>
 
@@ -24,7 +24,7 @@
             <p><strong>Prénom :</strong> <?= htmlspecialchars($visiteur['prenom']) ?></p>
             <p><strong>Adresse :</strong> <?= htmlspecialchars($visiteur['adresse']) ?></p>
             <p><strong>Ville :</strong> <?= htmlspecialchars($visiteur['ville']) ?></p>
-            <p><strong>Code Postale :</strong> <?= htmlspecialchars($visiteur['cp']) ?></p>
+            <p><strong>Code Postal :</strong> <?= htmlspecialchars($visiteur['cp']) ?></p>
             <p><strong>Date embauche :</strong> <?= htmlspecialchars($visiteur['date_embauche']) ?></p>
             <p><strong>Login :</strong> <?= htmlspecialchars($visiteur['login']) ?></p>
             <p><strong>Mot de passe :</strong> <?= htmlspecialchars($visiteur['mdp']) ?></p>
