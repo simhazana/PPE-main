@@ -16,12 +16,12 @@
 </head>
 <body>
     <div class="topbar">
-        <h1 style="margin:0;">Liste des Frais forfaits</h1>
+        <h1 style="margin:0;">Liste des Frais hors forfaits</h1>
         <a class="button" href="./dashboard">Dashboard</a>
         <a class="button" href="./logout">Se déconnecter</a>
     </div>
 
-    <a class="button" href="./fraisHorsForfait/create">➕ Ajouter un frais forfait</a>
+    <a class="button" href="./fraisHorsForfait/create">➕ Ajouter un frais hors forfait</a>
 
     <?php if (!empty($message)): ?>
         <div class="flash"><?= htmlspecialchars($message) ?></div>
@@ -53,7 +53,7 @@
                              <form action="./fraisHorsForfait/<?= urlencode($frais['id']) ?>/delete"
                              method="post"
                              style="display:inline"
-                             onsubmit="return confirm('Supprimer ce frais forfait ? Cette action est définitive.');">
+                             onsubmit="return confirm('Supprimer ce frais hors forfait ? Cette action est définitive.');">
                                 <button type="submit">Supprimer
 
                                 </button>

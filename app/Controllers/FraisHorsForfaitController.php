@@ -17,7 +17,7 @@ final class FraisHorsForfaitController extends Controller
         } catch (\Throwable $e) {
             // Pour déboguer, active temporairement la ligne suivante :
             //error_log($e->getMessage());
-            $_SESSION['flash'] = 'Impossible de charger les frais forfait.';
+            $_SESSION['flash'] = 'Impossible de charger les frais hors forfait.';
             $fraisHorsForfait = [];
         }
 
@@ -49,7 +49,7 @@ final class FraisHorsForfaitController extends Controller
     }
 
     $this->render('fraisHorsForfait/show', [
-        'title' => 'Détail du frais forfait',
+        'title' => 'Détail du frais hors forfait',
         'fraisHorsForfait'  => $fraisHorsForfait,
         'message' => $_SESSION['flash'] ?? '',
     ]);
@@ -134,9 +134,13 @@ public function edit($id): void
     }
 
     // remplissage auto
-    $old = $_SESSION['old'] ?? ['libelle' => $fraisHorsForfait['libelle']];
-    /*$old = $_SESSION['old'] ?? ['montant' => $montant['montant']];*/
-    /*$old = $_SESSION['old'] ?? ['date' => $date['date']];*/
+    $old = $_SESSION['old'] ?? [
+        'libelle' => $fraisHorsForfait['libelle'],
+        'montant' => $fraisHorsForfait['montant'],
+        'date' => $fraisHorsForfait['date'],
+
+    ];
+
 
     $this->render('fraisHorsForfait/edit', [
         'title'   => 'Modifier un frais hors forfait',
@@ -197,12 +201,36 @@ public function update($id): void
 
     try {
         \Models\FraisHorsForfait::update($id, $libelle, $montant,$date);
-        $_SESSION['flash'] = "Frais Forfait modifié avec succès.";
+        $_SESSION['flash'] = "Frais hors Forfait modifié avec succès.";
         $this->redirect("./fraisHorsForfait/$id");
     } catch (\Throwable $e) {
         $_SESSION['flash'] = "Erreur lors de la mise à jour.";
         $this->redirect("./fraisHorsForfait");
     }
+}
+
+   public function delete($id): void
+{
+    if (empty($_SESSION['uid'])) {
+        $this->redirect('/');
+    }
+
+    $id = (int)$id;
+
+    try {
+        $ok = \Models\FraisHorsForfait::delete($id);
+
+        if ($ok) {
+            $_SESSION['flash'] = " Frais hors forfait supprimé avec succès.";
+        } else {
+            $_SESSION['flash'] = "Impossible de supprimer ce Frais hors forfait.";
+        }
+    } catch (\Throwable $e) {
+        // error_log($e->getMessage());
+        $_SESSION['flash'] = "Erreur lors de la suppression du Frais hors forfait.";
+    }
+
+    $this->redirect('/fraisHorsForfait');
 }
 
 
