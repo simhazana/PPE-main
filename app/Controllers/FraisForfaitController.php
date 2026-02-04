@@ -72,12 +72,9 @@ public function create(): void
         unset($_SESSION['flash'], $_SESSION['old'], $_SESSION['errors']); //unset= est ce que vide
     }
 // envoyer a la base de donné.
-<<<<<<< HEAD
 
-public function store(): void
-=======
     public function store(): void
->>>>>>> 8006f8d566d1963bd768a29489a99fd709141a28
+
 {
     if (empty($_SESSION['uid'])) $this->redirect('/');
 
@@ -112,7 +109,7 @@ public function store(): void
         $this->redirect('./fraisForfait');
     }
 }
-<<<<<<< HEAD
+
   // ---------- EDIT (GET) ----------
 public function edit($id): void
 {
@@ -132,7 +129,10 @@ public function edit($id): void
     }
 
     // remplissage auto
-    $old = $_SESSION['old'] ?? ['libelle' => $fraisForfait['libelle'],['montant' => $fraisForfait['montant']]];
+    $old = $_SESSION['old'] ?? [
+        'libelle' => $fraisForfait['libelle'],
+        'montant' => $fraisForfait['montant']
+        ];
 
 
     $this->render('fraisForfait/edit', [
@@ -187,8 +187,31 @@ public function update($id): void
         $this->redirect("./fraisForfait");
     }
 }
-=======
 
->>>>>>> 8006f8d566d1963bd768a29489a99fd709141a28
+
+
+    public function delete($id): void
+{
+    if (empty($_SESSION['uid'])) {
+        $this->redirect('/');
+    }
+
+    $id = (int)$id;
+
+    try {
+        $ok = \Models\FraisForfait::delete($id);
+
+        if ($ok) {
+            $_SESSION['flash'] = " Frais forfait supprimé avec succès.";
+        } else {
+            $_SESSION['flash'] = "Impossible de supprimer ce Frais forfait.";
+        }
+    } catch (\Throwable $e) {
+        // error_log($e->getMessage());
+        $_SESSION['flash'] = "Erreur lors de la suppression du Frais forfait.";
+    }
+
+    $this->redirect('/fraisForfait');
+}
 
 }
