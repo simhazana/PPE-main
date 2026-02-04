@@ -59,7 +59,10 @@ $router->get('/visiteur',       [Controllers\VisiteurController::class, 'index']
 $router->get('/visiteur/',       [Controllers\VisiteurController::class, 'index']);// copier pour visiteur
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> fa20e4d7e72cc7814cbbe1b48e511834b504fa00
 //frais hors forfait
 $router->get('#^/fraisHorsForfait/([0-9]+)$#', [Controllers\FraisHorsForfaitController::class, 'show']);
 $router->get('/fraisHorsForfait',       [Controllers\FraisHorsForfaitController::class, 'index']);
