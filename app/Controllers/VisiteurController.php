@@ -22,7 +22,7 @@ final class VisiteurController extends Controller
             $visiteur = [];
         }
 
-        $this->render('Visiteur/index', [
+        $this->render('visiteur/index', [
             'title'   => 'Liste des Visiteurs',
             'visiteur'   => $visiteur,
             'message' => $_SESSION['flash'] ?? '',
@@ -51,21 +51,29 @@ final class VisiteurController extends Controller
 
     $this->render('visiteur/show', [
         'title' => 'Détail du visiteur',
-        'etat'  => $visiteur,
+        'visiteur'  => $visiteur,
         'message' => $_SESSION['flash'] ?? '',
     ]);
     unset($_SESSION['flash']);
 }
 
-/*
+
  public function create(): void
     {
         if (empty($_SESSION['uid'])) $this->redirect('/');
 
-        $this->render('etat/create', [
-            'title'   => 'Créer un état',
+        $this->render('visiteur/create', [
+            'title'   => 'Créer un visiteur',
             'message' => $_SESSION['flash'] ?? '',
-            'old'     => $_SESSION['old'] ?? ['libelle' => ''],
+            'old'     => $_SESSION['old'] ?? [
+                'nom' => '',
+                'prenom' => '',
+                'adresse' => '',
+                'ville' => '',
+                'cp' => '',
+                'date_embauche' => '',
+                'login' => ''
+                ],
             'errors'  => $_SESSION['errors'] ?? [],
         ]);
 
@@ -76,34 +84,102 @@ final class VisiteurController extends Controller
 {
     if (empty($_SESSION['uid'])) $this->redirect('/');
 
-    $libelle = trim($_POST['libelle'] ?? '');
+    $nom = trim($_POST['nom'] ?? '');
+    $prenom = trim($_POST['prenom'] ?? '');
+    $adresse = trim($_POST['adresse'] ?? '');
+    $ville = trim($_POST['ville'] ?? '');
+    $cp = trim($_POST['cp'] ?? '');
+    $date_embauche = trim($_POST['date_embauche'] ?? '');
+    $login = trim($_POST['login'] ?? '');
+    $mdp = trim($_POST['mdp'] ?? '');
 
     $errors = [];
 
-    if ($libelle === '') {
-        $errors['libelle'] = 'Le libellé est obligatoire.';
-    } elseif (mb_strlen($libelle) > 100) {
-        $errors['libelle'] = 'Le libellé ne doit pas dépasser 100 caractères.';
+    if ($nom === '') {
+        $errors['nom'] = 'Le nom est obligatoire.';
+    } elseif (mb_strlen($nom) > 100) {
+        $errors['nom'] = 'Le nom ne doit pas dépasser 100 caractères.';
     }
 
+    if ($prenom === '') {
+        $errors['prenom'] = 'Le prenom est obligatoire.';
+    } elseif (mb_strlen($prenom) > 100) {
+        $errors['prenom'] = 'Le prenom ne doit pas dépasser 100 caractères.';
+    }
+
+    if ($adresse === '') {
+        $errors['adresse'] = 'Adresse obligatoire.';
+    } elseif (mb_strlen($adresse) > 100) {
+        $errors['adresse'] = 'Adresse ne doit pas dépasser 100 caractères.';
+    }
+
+    if ($ville === '') {
+        $errors['ville'] = 'La ville est obligatoire.';
+    } elseif (mb_strlen($ville) > 100) {
+        $errors['ville'] = 'La ville ne doit pas dépasser 100 caractères.';
+    }
+
+    if ($cp === '') {
+        $errors['cp'] = 'Le code postal est obligatoire.';
+    } elseif (mb_strlen($cp) > 100) {
+        $errors['adresse'] = 'Le code postal ne doit pas dépasser 100 caractères.';
+    }
+
+    if ($date_embauche === '') {
+        $errors['date_embauche'] = 'La date embauche est obligatoire.';
+    } elseif (mb_strlen($date_embauche) > 100) {
+        $errors['date_embauche'] = 'La date embauche  ne doit pas dépasser 100 caractères.';
+    }
+
+    if ($login === '') {
+        $errors['login'] = 'Le login est obligatoire.';
+    } elseif (mb_strlen($login) > 100) {
+        $errors['login'] = 'Le login ne doit pas dépasser 100 caractères.';
+    }
+
+    if ($mdp === '') {
+        $errors['mdp'] = 'Le mdp est obligatoire.';
+    } elseif (mb_strlen($mdp) > 100) {
+        $errors['mdp'] = 'Le mdp ne doit pas dépasser 100 caractères.';
+    }
+
+
+    /////////
     if (!empty($errors)) {
         $_SESSION['errors'] = $errors;
-        $_SESSION['old']    = ['libelle' => $libelle];
+        $_SESSION['old']    = [
+            'nom' => $nom,
+            'prenom' => $prenom,
+            'adresse' => $adresse,
+            'ville' => $ville,
+            'cp' => $cp,
+            'date_embauche' => $date_embauche,
+            'login' => $login
+            ];
         $_SESSION['flash']  = 'Merci de corriger les erreurs du formulaire.';
-        $this->redirect('./etat/create');
+        $this->redirect('./visiteur/create');
     }
 
     try {
-        $id = \Models\Etat::create($libelle); // maintenant avec ?
-        $_SESSION['flash'] = 'État créé avec succès.';
-        $this->redirect('./etat/' . $id);
+        $id = \Models\Visiteur::create(
+            $nom,
+            $prenom,
+            $adresse,
+            $ville,
+            $cp,
+            $date_embauche,
+            $login,
+            $mdp
+        );
+        $_SESSION['flash'] = 'visiteur créé avec succès.';
+        $this->redirect('./visiteur/' . $id);
     } catch (\Throwable $e) {
-        $_SESSION['flash'] = 'Impossible de créer l’état.';
-        $this->redirect('./etat');
+        $_SESSION['flash'] = 'Impossible de créer le visiteur.';
+        $this->redirect('./visiteur');
     }
 }
 
-
+/*
 // ---------- EDIT (GET) ----------
 public function edit($id): void
 {

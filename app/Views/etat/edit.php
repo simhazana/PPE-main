@@ -32,7 +32,7 @@
     </div>
 
     <button type="submit">Enregistrer</button>
-    <a href="../etat/<?= $etat['id'] ?>">Annuler</a>
+    <a href="../../etat/<?= $etat['id'] ?>">Annuler</a>
 </form>
 
 </body>

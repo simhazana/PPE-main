@@ -21,28 +21,37 @@ final class Visiteur
         $row = $st->fetch();
         return $row ?: null;
     }
-/*
-     public static function create(string $libelle): int
+
+     public static function create(
+        string $nom,
+        string $prenom,
+        string $adresse,
+        string $ville,
+        string $cp,
+        string $date_embauche,
+        string $login,
+        string $mdp
+        ): int
     {
         $pdo = Database::get();
-        $st  = $pdo->prepare('INSERT INTO etat (libelle) VALUES (?)');
-        $st->execute([$libelle]);
+        $st  = $pdo->prepare('INSERT INTO visiteur (nom,prenom,adresse,ville,cp,date_embauche,login,mdp) VALUES (?,?,?,?,?,?,?,?)');
+        $st->execute([$nom, $prenom, $adresse, $ville, $cp, $date_embauche, $login, $mdp]);
         return (int)$pdo->lastInsertId();
     }
-
-    public static function update(int $id, string $libelle): bool
+/*
+    public static function update(string $nom,string $prenom, string $adresse,string $ville,string $cp,string $date_embauche,string $login,string $mdp): bool
 {
     $pdo = Database::get();
-    $st  = $pdo->prepare('UPDATE etat SET libelle = ? WHERE id = ?');
-    return $st->execute([$libelle, $id]);
+    $st  = $pdo->prepare('UPDATE visiteur SET nom = ? , prenom = ?, adresse = ?, ville = ?, cp  = ? date_embauche = ?, login = ?, mdp = ? WHERE id = ?');
+    return $st->execute([$nom, $prenom, $adresse, $ville, $cp, $date_embauche, $login, $mdp]);
 }
 
-public static function delete(int $id): bool
+
+public static function delete(string $nom,string $prenom, string $adresse,string $ville,string $cp,string $date_embauche,string $login,string $mdp): bool
 {
     $pdo = Database::get();
-    $st  = $pdo->prepare('DELETE FROM etat WHERE id = ?');
-    return $st->execute([$id]);
+    $st  = $pdo->prepare('DELETE FROM visiteur WHERE id = ?');
+    return $st->execute([$nom, $prenom, $adresse, $ville, $cp, $date_embauche, $login, $mdp]);
 }
 */
-
 }
