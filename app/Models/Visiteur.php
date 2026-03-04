@@ -16,8 +16,8 @@ final class Visiteur
     public static function findById(int $id): ?array
     {
         $pdo = Database::get();
-        $st  = $pdo->prepare('SELECT id,nom,prenom,adresse,ville,cp,date_embauche,login,mdp  FROM  visiteur WHERE id = :id');
-        $st->execute(['id' => $id]);
+        $st  = $pdo->prepare('SELECT * FROM visiteur WHERE id = ?');
+        $st->execute([$id]);
         $row = $st->fetch();
         return $row ?: null;
     }
@@ -38,20 +38,52 @@ final class Visiteur
         $st->execute([$nom, $prenom, $adresse, $ville, $cp, $date_embauche, $login, $mdp]);
         return (int)$pdo->lastInsertId();
     }
-/*
-    public static function update(string $nom,string $prenom, string $adresse,string $ville,string $cp,string $date_embauche,string $login,string $mdp): bool
+
+    public static function update(
+        int $id,
+        string $nom,
+        string $prenom, 
+        string $adresse,
+        string $ville,
+        string $cp,
+        string $date_embauche,
+        string $login
+        /*,
+        string $mdp*/
+        ): bool
 {
     $pdo = Database::get();
-    $st  = $pdo->prepare('UPDATE visiteur SET nom = ? , prenom = ?, adresse = ?, ville = ?, cp  = ? date_embauche = ?, login = ?, mdp = ? WHERE id = ?');
-    return $st->execute([$nom, $prenom, $adresse, $ville, $cp, $date_embauche, $login, $mdp]);
+    $st  = $pdo->prepare('UPDATE visiteur SET 
+        nom = ? , 
+        prenom = ?, 
+        adresse = ?, 
+        ville = ?, 
+        cp  = ?,
+        date_embauche = ?, 
+        login = ?
+        WHERE id = ?'
+        );
+
+    return $st->execute([
+        $nom,
+        $prenom,
+        $adresse,
+        $ville,
+        $cp, 
+        $date_embauche, 
+        $login,
+        $id
+        /*$mdp*/
+        
+        ]);
 }
 
 
-public static function delete(string $nom,string $prenom, string $adresse,string $ville,string $cp,string $date_embauche,string $login,string $mdp): bool
+public static function delete(int $id): bool
 {
     $pdo = Database::get();
     $st  = $pdo->prepare('DELETE FROM visiteur WHERE id = ?');
-    return $st->execute([$nom, $prenom, $adresse, $ville, $cp, $date_embauche, $login, $mdp]);
+    return $st->execute([$id]);
 }
-*/
+
 }

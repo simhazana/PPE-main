@@ -100,7 +100,10 @@ public function store(): void
 
     if (!empty($errors)) {
         $_SESSION['errors'] = $errors;
-        $_SESSION['old']    = ['libelle' => $libelle,'montant'=> $montant,'date'=>$montant];
+        $_SESSION['old']    = [
+            'libelle' => $libelle,
+            'montant'=> $montant,
+            'date'=>$date];
         $_SESSION['flash']  = 'Merci de corriger les erreurs du formulaire.';
         $this->redirect('./fraisHorsForfait/create');
     }

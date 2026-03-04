@@ -17,7 +17,7 @@ final class VisiteurController extends Controller
             $visiteur = Visiteur::findAll(); // appel statique aligné avec le modèle
         } catch (\Throwable $e) {
             // Pour déboguer, active temporairement la ligne suivante :
-            // error_log($e->getMessage());
+            error_log($e->getMessage());
             $_SESSION['flash'] = 'Impossible de charger les visiteurs.';
             $visiteur = [];
         }
@@ -42,9 +42,10 @@ final class VisiteurController extends Controller
             http_response_code(404);
             $_SESSION['flash'] = 'Visiteur introuvable.';
             $this->redirect('/visiteur');
+            return;
         }
     } catch (\Throwable $e) {
-        // error_log($e->getMessage()); // utile en debug
+        error_log($e->getMessage()); // utile en debug
         $_SESSION['flash'] = 'Erreur lors du chargement du visiteur.';
         $visiteur = null;
     }
@@ -144,7 +145,7 @@ final class VisiteurController extends Controller
     }
 
 
-    /////////
+    
     if (!empty($errors)) {
         $_SESSION['errors'] = $errors;
         $_SESSION['old']    = [
@@ -157,7 +158,7 @@ final class VisiteurController extends Controller
             'login' => $login
             ];
         $_SESSION['flash']  = 'Merci de corriger les erreurs du formulaire.';
-        $this->redirect('./visiteur/create');
+        $this->redirect('/visiteur/create');
     }
 
     try {
@@ -172,14 +173,14 @@ final class VisiteurController extends Controller
             $mdp
         );
         $_SESSION['flash'] = 'visiteur créé avec succès.';
-        $this->redirect('./visiteur/' . $id);
+        $this->redirect('/visiteur/' . $id);
     } catch (\Throwable $e) {
         $_SESSION['flash'] = 'Impossible de créer le visiteur.';
-        $this->redirect('./visiteur');
+        $this->redirect('/visiteur');
     }
 }
 
-/*
+
 // ---------- EDIT (GET) ----------
 public function edit($id): void
 {
@@ -188,22 +189,30 @@ public function edit($id): void
     $id = (int)$id;
 
     try {
-        $etat = \Models\Etat::findById($id);
-        if (!$etat) {
-            $_SESSION['flash'] = "État introuvable.";
-            $this->redirect('./etat');
+        $visiteur = \Models\Visiteur::findById($id);
+        if (!$visiteur) {
+            $_SESSION['flash'] = "Visiteur introuvable.";
+            $this->redirect('/visiteur');
         }
     } catch (\Throwable $e) {
-        $_SESSION['flash'] = "Erreur lors du chargement de l'état.";
-        $this->redirect('./etat');
+        $_SESSION['flash'] = "Erreur lors du chargement du visiteur.";
+        $this->redirect('/visiteur');
     }
 
     // remplissage auto
-    $old = $_SESSION['old'] ?? ['libelle' => $etat['libelle']];
+    $old = $_SESSION['old'] ?? [
+    'nom' => $visiteur['NOM'],
+    'prenom' => $visiteur['PRENOM'],
+    'adresse' => $visiteur['ADRESSE'],
+    'ville' => $visiteur['VILLE'],
+    'cp' => $visiteur['CP'],
+    'date_embauche' => $visiteur['DATE_EMBAUCHE'],
+    'login' => $visiteur['LOGIN']
+        ];
 
-    $this->render('etat/edit', [
-        'title'   => 'Modifier un état',
-        'etat'    => $etat,
+    $this->render('visiteur/edit', [
+        'title'   => 'Modifier un visiteur',
+        'visiteur'=> $visiteur,
         'old'     => $old,
         'errors'  => $_SESSION['errors'] ?? [],
         'message' => $_SESSION['flash'] ?? ''
@@ -218,31 +227,85 @@ public function update($id): void
     if (empty($_SESSION['uid'])) $this->redirect('/');
 
     $id = (int)$id;
-    $libelle = trim($_POST['libelle'] ?? '');
+    $nom = trim($_POST['nom'] ?? '');
+    $prenom = trim($_POST['prenom'] ?? '');
+    $adresse = trim($_POST['adresse'] ?? '');
+    $ville = trim($_POST['ville'] ?? '');
+    $cp = trim($_POST['cp'] ?? '');
+    $date_embauche = trim($_POST['date_embauche'] ?? '');
+    $login = trim($_POST['login'] ?? '');
+    //$mdp = trim($_POST['mdp'] ?? '');
 
     $errors = [];
 
-    if ($libelle === '') {
-        $errors['libelle'] = 'Le libellé est obligatoire.';
+  if ($nom === '') {
+        $errors['nom'] = 'Le nom est obligatoire.';
+    } 
+   
+
+    if ($prenom === '') {
+        $errors['prenom'] = 'Le prenom est obligatoire.';
     }
+
+    if ($adresse === '') {
+        $errors['adresse'] = 'Adresse obligatoire.';
+    }
+    
+    if ($ville === '') {
+        $errors['ville'] = 'La ville est obligatoire.';
+    } 
+
+    if ($cp === '') {
+        $errors['cp'] = 'Le code postal est obligatoire.';
+    } 
+
+    if ($date_embauche === '') {
+        $errors['date_embauche'] = 'La date embauche est obligatoire.';
+    } 
+    
+    if ($login === '') {
+        $errors['login'] = 'Le login est obligatoire.';
+    } 
+
+   /* if ($mdp === '') {
+        $errors['mdp'] = 'Le mdp est obligatoire.';
+    } */
 
     if ($errors) {
         $_SESSION['errors'] = $errors;
-        $_SESSION['old'] = ['libelle' => $libelle];
+        $_SESSION['old'] = [
+            'nom' => $nom,
+            'prenom' => $prenom,
+            'adresse' => $adresse,
+            'ville' => $ville,
+            'cp' => $cp,
+            'date_embauche' => $date_embauche,
+            'login' => $login
+            ];
+
         $_SESSION['flash'] = "Merci de corriger les erreurs.";
-        $this->redirect("./etat/$id/edit");
+        $this->redirect("/visiteur/$id/edit");
     }
 
     try {
-        \Models\Etat::update($id, $libelle);
-        $_SESSION['flash'] = "État modifié avec succès.";
-        $this->redirect("./etat/$id");
+        \Models\Visiteur::update(
+            $id,
+            $nom,
+            $prenom,
+            $adresse,
+            $ville,
+            $cp,
+            $date_embauche,
+            $login
+            );
+
+        $_SESSION['flash'] = "Visiteur modifié avec succès.";
+        $this->redirect("/visiteur/$id");
     } catch (\Throwable $e) {
         $_SESSION['flash'] = "Erreur lors de la mise à jour.";
-        $this->redirect("./etat");
+        $this->redirect("/visiteur");
     }
 }
-
 
 
 
@@ -255,22 +318,20 @@ public function delete($id): void
     $id = (int)$id;
 
     try {
-        $ok = \Models\Etat::delete($id);
+        $ok = \Models\Visiteur::delete($id);
 
         if ($ok) {
-            $_SESSION['flash'] = "État supprimé avec succès.";
+            $_SESSION['flash'] = "Visiteur supprimé avec succès.";
         } else {
-            $_SESSION['flash'] = "Impossible de supprimer cet état.";
+            $_SESSION['flash'] = "Impossible de supprimer ce visiteur.";
         }
     } catch (\Throwable $e) {
         // error_log($e->getMessage());
-        $_SESSION['flash'] = "Erreur lors de la suppression de l’état.";
+        $_SESSION['flash'] = "Erreur lors de la suppression du visiteur.";
     }
 
-    $this->redirect('/etat');
+    $this->redirect('/visiteur');
 }
-
-*/
 
 
 

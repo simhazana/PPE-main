@@ -76,7 +76,9 @@ $router->get('/visiteur',       [Controllers\VisiteurController::class, 'index']
 $router->get('/visiteur/',       [Controllers\VisiteurController::class, 'index']);// en ordre :  show, index, create, store
 $router->get ('/visiteur/create',       [Controllers\VisiteurController::class, 'create']);
 $router->post('/visiteur/create',       [Controllers\VisiteurController::class, 'store']);
-///
+$router->get ('#^/visiteur/([0-9]+)/edit$#', [Controllers\VisiteurController::class, 'edit']);
+$router->post('#^/visiteur/([0-9]+)/edit$#', [Controllers\VisiteurController::class, 'update']);
+$router->post('#^/visiteur/([0-9]+)/delete$#', [Controllers\VisiteurController::class, 'delete']);
 
 
 // Normalisation du path (gère le projet dans un sous-dossier, ex. /monapp/public)
@@ -130,36 +132,6 @@ if (preg_match('#^' . preg_quote($scriptDir, '#') . '/etat/([0-9]+)/edit$#', $_S
 
 }
 
-// Fallback manuel pour /fraisForfait/{id}/edit
-if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fraisForfait/([0-9]+)/edit$#', $_SERVER['REQUEST_URI'] ?? '', $m)
-    || preg_match('#^/fraisForfait/([0-9]+)/edit$#', $requestPath, $m)) {
-
-    $id = (int)$m[1];
-
-    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
-        (new \Controllers\FraisForfaitController)->update($id);
-    } else {
-        (new \Controllers\FraisForfaitController)->edit($id);
-    }
-    exit;
-    
-}
-
-// Fallback manuel pour /fraisHorsForfait/{id}/edit
-if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fraisHorsForfait/([0-9]+)/edit$#', $_SERVER['REQUEST_URI'] ?? '', $m)
-    || preg_match('#^/fraisHorsForfait/([0-9]+)/edit$#', $requestPath, $m)) {
-
-    $id = (int)$m[1];
-
-    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
-        (new \Controllers\FraisHorsForfaitController)->update($id);
-    } else {
-        (new \Controllers\FraisHorsForfaitController)->edit($id);
-    }
-    exit;
-    
-}
-
 // Fallback manuel pour /etat/{id}/delete
 if (preg_match('#^' . preg_quote($scriptDir, '#') . '/etat/([0-9]+)/delete$#', $_SERVER['REQUEST_URI'] ?? '', $m)
     || preg_match('#^/etat/([0-9]+)/delete$#', $requestPath, $m)) {
@@ -173,6 +145,21 @@ if (preg_match('#^' . preg_quote($scriptDir, '#') . '/etat/([0-9]+)/delete$#', $
         header('Location: /etat');
     }
     exit;
+}
+
+// Fallback manuel pour /fraisForfait/{id}/edit
+if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fraisForfait/([0-9]+)/edit$#', $_SERVER['REQUEST_URI'] ?? '', $m)
+    || preg_match('#^/fraisForfait/([0-9]+)/edit$#', $requestPath, $m)) {
+
+    $id = (int)$m[1];
+
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+        (new \Controllers\FraisForfaitController)->update($id);
+    } else {
+        (new \Controllers\FraisForfaitController)->edit($id);
+    }
+    exit;
+    
 }
 
 // Fallback manuel pour /fraisForfait/{id}/delete
@@ -190,6 +177,22 @@ if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fraisForfait/([0-9]+)/dele
     exit;
 }
 
+// Fallback manuel pour /fraisHorsForfait/{id}/edit
+if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fraisHorsForfait/([0-9]+)/edit$#', $_SERVER['REQUEST_URI'] ?? '', $m)
+    || preg_match('#^/fraisHorsForfait/([0-9]+)/edit$#', $requestPath, $m)) {
+
+    $id = (int)$m[1];
+
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+        (new \Controllers\FraisHorsForfaitController)->update($id);
+    } else {
+        (new \Controllers\FraisHorsForfaitController)->edit($id);
+    }
+    exit;
+    
+}
+
+
 // Fallback manuel pour /fraisHorsForfait/{id}/delete
 if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fraisHorsForfait/([0-9]+)/delete$#', $_SERVER['REQUEST_URI'] ?? '', $m)
     || preg_match('#^/fraisHorsForfait/([0-9]+)/delete$#', $requestPath, $m)) {
@@ -205,6 +208,44 @@ if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fraisHorsForfait/([0-9]+)/
     exit;
 }
 
+
+
+
+
+
+
+
+
+
+// Fallback manuel pour /visiteur/{id}/edit
+if (preg_match('#^' . preg_quote($scriptDir, '#') . '/visiteur/([0-9]+)/edit$#', $_SERVER['REQUEST_URI'] ?? '', $m)
+    || preg_match('#^/visiteur/([0-9]+)/edit$#', $requestPath, $m)) {
+
+    $id = (int)$m[1];
+
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+        (new \Controllers\VisiteurController)->update($id);
+    } else {
+        (new \Controllers\VisiteurController)->edit($id);
+    }
+    exit;
+    
+}
+
+// Fallback manuel pour /visiteur/{id}/delete
+if (preg_match('#^' . preg_quote($scriptDir, '#') . '/visiteur/([0-9]+)/delete$#', $_SERVER['REQUEST_URI'] ?? '', $m)
+    || preg_match('#^/visiteur/([0-9]+)/delete$#', $requestPath, $m)) {
+
+    $id = (int)$m[1];
+
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+        (new \Controllers\VisiteurController)->delete($id);
+    } else {
+        // On ne fait rien en GET sur /delete, on renvoie vers la liste
+        header('Location: /visiteur');
+    }
+    exit;
+}
 
 
 $router->dispatch($_SERVER['REQUEST_METHOD'] ?? 'GET', $requestPath);

@@ -43,7 +43,7 @@
     </div>
 
     <button type="submit">Enregistrer</button>
-    <a href="../fraisForfait/<?= $fraisForfait['id'] ?>">Annuler</a>
+    <a href="../../fraisForfait/<?= $fraisForfait['id'] ?>">Annuler</a>
 </form>
 
 </body>

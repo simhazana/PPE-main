@@ -19,15 +19,15 @@
 
     <?php if (!empty($visiteur)): ?>
         <div class="card">
-            <p><strong>ID :</strong> <?= htmlspecialchars($visiteur['id']) ?></p>
-            <p><strong>Nom :</strong> <?= htmlspecialchars($visiteur['nom']) ?></p>
-            <p><strong>Prénom :</strong> <?= htmlspecialchars($visiteur['prenom']) ?></p>
-            <p><strong>Adresse :</strong> <?= htmlspecialchars($visiteur['adresse']) ?></p>
-            <p><strong>Ville :</strong> <?= htmlspecialchars($visiteur['ville']) ?></p>
-            <p><strong>Code Postal :</strong> <?= htmlspecialchars($visiteur['cp']) ?></p>
-            <p><strong>Date embauche :</strong> <?= htmlspecialchars($visiteur['date_embauche']) ?></p>
-            <p><strong>Login :</strong> <?= htmlspecialchars($visiteur['login']) ?></p>
-            <p><strong>Mot de passe :</strong> <?= htmlspecialchars($visiteur['mdp']) ?></p>
+            <p><strong>ID :</strong> <?= htmlspecialchars($visiteur['ID']) ?></p>
+        <p><strong>Nom :</strong> <?= htmlspecialchars($visiteur['NOM']) ?></p>
+        <p><strong>Prénom :</strong> <?= htmlspecialchars($visiteur['PRENOM']) ?></p>
+        <p><strong>Adresse :</strong> <?= htmlspecialchars($visiteur['ADRESSE']) ?></p>
+        <p><strong>Ville :</strong> <?= htmlspecialchars($visiteur['VILLE']) ?></p>
+        <p><strong>Code Postal :</strong> <?= htmlspecialchars($visiteur['CP']) ?></p>
+        <p><strong>Date embauche :</strong> <?= htmlspecialchars($visiteur['DATE_EMBAUCHE']) ?></p>
+        <p><strong>Login :</strong> <?= htmlspecialchars($visiteur['LOGIN']) ?></p>
+        <p><strong>Mot de passe :</strong> <?= htmlspecialchars($visiteur['MDP']) ?></p>
         </div>
         <a class="button" href="../visiteur">⬅ Retour à la liste</a>
     <?php else: ?>
