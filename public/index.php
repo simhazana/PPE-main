@@ -81,6 +81,17 @@ $router->post('#^/visiteur/([0-9]+)/edit$#', [Controllers\VisiteurController::cl
 $router->post('#^/visiteur/([0-9]+)/delete$#', [Controllers\VisiteurController::class, 'delete']);
 
 
+$router->get ('/fichefrais',        [Controllers\FicheFraisController::class, 'index']);
+$router->get ('/fichefrais/',       [Controllers\FicheFraisController::class, 'index']);
+$router->get ('/fichefrais/create', [Controllers\FicheFraisController::class, 'create']);
+$router->post('/fichefrais/create',  [Controllers\FicheFraisController::class, 'store']);
+$router->get ('#^/fichefrais/([^/]+)/([^/]+)/edit$#',   [Controllers\FicheFraisController::class, 'edit']);
+$router->post('#^/fichefrais/([^/]+)/([^/]+)/edit$#', [Controllers\FicheFraisController::class, 'update']);
+$router->post('#^/fichefrais/([^/]+)/([^/]+)/delete$#', [Controllers\FicheFraisController::class, 'delete']);
+$router->get ('#^/fichefrais/([^/]+)/([^/]+)$#',        [Controllers\FicheFraisController::class, 'show']);
+
+
+
 // Normalisation du path (gère le projet dans un sous-dossier, ex. /monapp/public)
 $requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $scriptDir   = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '')), '/'); // ex: /monapp/public
@@ -246,6 +257,44 @@ if (preg_match('#^' . preg_quote($scriptDir, '#') . '/visiteur/([0-9]+)/delete$#
     }
     exit;
 }
+
+
+if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fichefrais/([0-9]+)/([0-9]+)$#', $_SERVER['REQUEST_URI'] ?? '', $m)
+    || preg_match('#^/fichefrais/([0-9]+)/([0-9]+)$#', $requestPath, $m)) {
+    (new \Controllers\FicheFraisController)->show((int)$m[1],(int)$m[2]);
+    exit;
+}
+
+if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fichefrais/([0-9]+)/([0-9]+)/edit$#', $_SERVER['REQUEST_URI'] ?? '', $m)
+    || preg_match('#^/fichefrais/([0-9]+)/([0-9]+)/edit$#', $requestPath, $m)) {
+
+    $id = (int)$m[1];
+    $mois = (int)$m[2];
+
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+        (new \Controllers\FicheFraisController)->update($id,$mois);
+    } else {
+        (new \Controllers\FicheFraisController)->edit($id,$mois);
+    }
+    exit;
+}
+
+if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fichefrais/([0-9]+)/([0-9]+)/delete$#', $_SERVER['REQUEST_URI'] ?? '', $m)
+    || preg_match('#^/fichefrais/([0-9]+)/([0-9]+)/delete$#', $requestPath, $m)) {
+
+    $id = (int)$m[1];
+    $mois = (int)$m[2];
+
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+        (new \Controllers\FicheFraisController)->delete($id,$mois);
+    } else {
+        // On ne fait rien en GET sur /delete, on renvoie vers la liste
+        header('Location: /fichefrais');
+    }
+    exit;
+}
+
+
 
 
 $router->dispatch($_SERVER['REQUEST_METHOD'] ?? 'GET', $requestPath);
