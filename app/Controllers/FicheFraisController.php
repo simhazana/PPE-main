@@ -15,7 +15,7 @@ final class FicheFraisController extends Controller
         try {
             $ficheFrais = FicheFrais::findAll(); // appel statique aligné avec le modèle
         } catch (\Throwable $e) {
-            // Pour déboguer, active temporairement la ligne suivante :
+            //Pour déboguer, active temporairement la ligne suivante :
             error_log($e->getMessage());
             $_SESSION['flash'] = 'Impossible de charger les fiches frais.';
             $ficheFrais = [];
@@ -33,18 +33,18 @@ final class FicheFraisController extends Controller
 {
     if (empty($_SESSION['uid'])) $this->redirect('/');
 
-    $idVisiteur = (int)$idVisiteur;
 
     try {
-        $ficheFrais = \Models\FicheFrais::findById($id);
+        $ficheFrais = \Models\FicheFrais::findById($idvisiteur,$mois);
         if (!$ficheFrais) {
             http_response_code(404);
-            $_SESSION['flash'] = 'frais forfait introuvable.';
+            $_SESSION['flash'] = 'fiche frais introuvable.';
             $this->redirect('/ficheFrais');
+            return;
         }
     } catch (\Throwable $e) {
-        // error_log($e->getMessage()); // utile en debug
-        $_SESSION['flash'] = 'Erreur lors du chargement de le frais forfait.';
+        error_log($e->getMessage()); // utile en debug
+        $_SESSION['flash'] = 'Erreur lors du chargement de la fiche frais.';
         $ficheFrais = null;
     }
 

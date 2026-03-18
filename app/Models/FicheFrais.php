@@ -15,11 +15,11 @@ final class FicheFrais
         FicheFrais.nbrJustificatifs,
         FicheFrais.montantValide,
         FicheFrais.dateModif,
-        /*FicheFrais.idFraisHorsForfait,
-        FicheFrais.idEtat*/
+        FicheFrais.idLigneFraisHorsForfait,
+        FicheFrais.idEtat
 
-        FraisHorForfait.libelle AS LibelleHorForfait,
-        Etat.libelle AS LibelleEtat
+        /*FraisHorForfait.libelle AS LibelleHorForfait,
+        Etat.libelle AS LibelleEtat*/
         
         FROM 
             FicheFrais 
@@ -27,18 +27,18 @@ final class FicheFrais
         Join
             visiteur ON FicheFrais.idVisiteur = visiteur.id
         Join
-            fraishorsforfait ON FicheFrais.idFraisHorsForfait= FraisHorsForfait.id
+            fraishorsforfait ON FicheFrais.idLigneFraisHorsForfait= FraisHorsForfait.id
         Join 
             Etat ON FicheFrais.idEtat = Etat.id');
 
         return $st->fetchAll(); 
     }
-    public static function findById(int $id): ?array
+    public static function findById(int $idvisiteur,int $mois): ?array
     {
         $pdo = Database::get();
-        $st  = $pdo->prepare('SELECT * FROM ficheFrais WHERE idVisiteur = :id AND mois= :mois');
+        $st  = $pdo->prepare('SELECT * FROM FicheFrais WHERE idVisiteur = :id AND mois= :mois');
         $st->execute([
-            'idVisiteur' => $idVisiteur,
+            'idVisiteur' => $idvisiteur,
             'mois' => $mois
             ]);
 

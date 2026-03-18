@@ -169,18 +169,18 @@
             <tbody>
                 <?php foreach ($ficheFrais as $fiche): ?>
                     <tr>
-                        <td><?= htmlspecialchars((string)$fiche['nom']) ?></td>
+                        <td><?= htmlspecialchars((string)$fiche['idVisiteur']) ?></td>
                         <td><?= htmlspecialchars((string)$fiche['mois']) ?></td>
                         <td><?= htmlspecialchars((string)$fiche['nbrJustificatifs']) ?></td>
                         <td><?= htmlspecialchars((string)($fiche['montantValide'])) ?></td>
                         <td><?= htmlspecialchars((string)$fiche['dateModif']) ?></td>
-                        <td><?= htmlspecialchars((string)$fiche['LibelleHorForfait']) ?></td>
-                        <td><?= htmlspecialchars((string)$fiche['LibelleEtat']) ?></td>
+                        <td><?= htmlspecialchars((string)$fiche['idLigneFraisHorsForfait']) ?></td>
+                        <td><?= htmlspecialchars((string)$fiche['idEtat']) ?></td>
 
                             <td class="actions">
-                            <a href="./fichefrais/<?= urlencode($fiche['idVisiteur']) ?>">Voir</a>
+                            <a href="./fichefrais/<?= urlencode($fiche['idVisiteur']) ?>/<?= urlencode($fiche['mois']) ?>">Voir</a>
                             <a href="./fichefrais/<?= urlencode($fiche['idVisiteur']) ?>/edit">Modifier</a>
-                             <form action="./fichefrais/<?= urlencode($fiche['id']) ?>/delete"
+                             <form action="./fichefrais/<?= urlencode($fiche['idVisiteur']) ?>/delete"
                              method="post"
                              style="display:inline"
                              onsubmit="return confirm('Supprimer cette fiche frais ? Cette action est définitive.');">

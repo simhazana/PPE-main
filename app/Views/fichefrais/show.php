@@ -19,7 +19,7 @@
 
     <?php if (!empty($fichefrais)): ?>
         <div class="card">
-            <p><strong>IDVisiteur:</strong> <?= htmlspecialchars($fichefrais['idvisiteur']) ?></p>
+            <p><strong>IDVisiteur:</strong> <?= htmlspecialchars($fichefrais['idVisiteur']) ?></p>
             <p><strong>Mois :</strong> <?= htmlspecialchars($fichefrais['mois']) ?></p>
             <p><strong>nbrJustificatifs :</strong> <?= htmlspecialchars($fichefrais['nbrJustificatifs']) ?></p>
             <p><strong>montantValide :</strong> <?= htmlspecialchars($fichefrais['montantValide']) ?></p>
