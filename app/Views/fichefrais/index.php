@@ -139,7 +139,7 @@
 </head>
 <body>
     <div class="topbar">
-        <h1 style="margin:0;">Liste des Frais forfaits</h1>
+        <h1 style="margin:0;">Liste des fiches frais</h1>
         <a class="button" href="./dashboard">Dashboard</a>
         <a class="button" href="./logout">Se déconnecter</a>
     </div>

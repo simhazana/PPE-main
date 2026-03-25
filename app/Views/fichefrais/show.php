@@ -17,15 +17,15 @@
         <div class="flash"><?= htmlspecialchars($message) ?></div>
     <?php endif; ?>
 
-    <?php if (!empty($fichefrais)): ?>
+    <?php if (!empty($ficheFrais)): ?>
         <div class="card">
-            <p><strong>IDVisiteur:</strong> <?= htmlspecialchars($fichefrais['idVisiteur']) ?></p>
-            <p><strong>Mois :</strong> <?= htmlspecialchars($fichefrais['mois']) ?></p>
-            <p><strong>nbrJustificatifs :</strong> <?= htmlspecialchars($fichefrais['nbrJustificatifs']) ?></p>
-            <p><strong>montantValide :</strong> <?= htmlspecialchars($fichefrais['montantValide']) ?></p>
-            <p><strong>dateModif :</strong> <?= htmlspecialchars($fichefrais['dateModif']) ?></p>
-            <p><strong>idLigneFraisHorsForfait :</strong> <?= htmlspecialchars($fichefrais['idLigneFraisHorsForfait']) ?></p>
-            <p><strong>idEtat :</strong> <?= htmlspecialchars($fichefrais['idEtat']) ?></p>
+            <p><strong>IDVisiteur:</strong> <?= htmlspecialchars($ficheFrais['idVisiteur']) ?></p>
+            <p><strong>Mois :</strong> <?= htmlspecialchars($ficheFrais['mois']) ?></p>
+            <p><strong>nbrJustificatifs :</strong> <?= htmlspecialchars($ficheFrais['nbrJustificatifs']) ?></p>
+            <p><strong>montantValide :</strong> <?= htmlspecialchars($ficheFrais['montantValide']) ?></p>
+            <p><strong>dateModif :</strong> <?= htmlspecialchars($ficheFrais['dateModif']) ?></p>
+            <p><strong>idLigneFraisHorsForfait :</strong> <?= htmlspecialchars($ficheFrais['idLigneFraisHorsForfait']) ?></p>
+            <p><strong>idEtat :</strong> <?= htmlspecialchars($ficheFrais['idEtat']) ?></p>
          
         </div>
         <a class="button" href="../fichefrais">⬅ Retour à la liste</a>
