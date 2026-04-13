@@ -1,0 +1,13 @@
+<?php
+
+
+if ($estConnecte) {
+    if (isset($_SESSION['idVisiteur'])){
+        include 'vues/accueilV.php';
+     }
+     elseif (isset($_SESSION['idComptable'])){
+        include 'vues/accueilC.php';
+     }
+} else {
+    include 'vues/connexion.php';
+}

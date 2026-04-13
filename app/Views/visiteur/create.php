@@ -154,6 +154,21 @@
             <?php endif; ?>
         </div>
 
+        <div class="field">
+            <label for="role"> role *</label>
+            <input
+                type="text"
+                name="role"
+                id="role"
+                required
+            >
+            <?php if (!empty($errors['mdp'])): ?>
+                <div class="error">
+                    <?= htmlspecialchars($errors['mdp'], ENT_QUOTES, 'UTF-8'); ?>
+                </div>
+            <?php endif; ?>
+        </div>
+
 
         <button type="submit">Enregistrer</button>
         <a href="./visiteur">Annuler</a>

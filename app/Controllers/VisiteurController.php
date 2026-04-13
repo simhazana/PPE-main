@@ -73,7 +73,8 @@ final class VisiteurController extends Controller
                 'ville' => '',
                 'cp' => '',
                 'date_embauche' => '',
-                'login' => ''
+                'login' => '',
+                'role'=> ''
                 ],
             'errors'  => $_SESSION['errors'] ?? [],
         ]);
@@ -93,6 +94,7 @@ final class VisiteurController extends Controller
     $date_embauche = trim($_POST['date_embauche'] ?? '');
     $login = trim($_POST['login'] ?? '');
     $mdp = trim($_POST['mdp'] ?? '');
+    $role = trim($_POST['role'] ?? '');
 
     $errors = [];
 
@@ -144,6 +146,12 @@ final class VisiteurController extends Controller
         $errors['mdp'] = 'Le mdp ne doit pas dépasser 100 caractères.';
     }
 
+    if ($role === '') {
+        $errors['role'] = 'Le role est obligatoire ';
+    } elseif (mb_strlen($mdp) > 100) {
+        $errors['role'] = 'Le role ne doit pas dépasser 100 caractères.';
+    }
+
 
     
     if (!empty($errors)) {
@@ -155,7 +163,8 @@ final class VisiteurController extends Controller
             'ville' => $ville,
             'cp' => $cp,
             'date_embauche' => $date_embauche,
-            'login' => $login
+            'login' => $login,
+            'role'=> $role
             ];
         $_SESSION['flash']  = 'Merci de corriger les erreurs du formulaire.';
         $this->redirect('/visiteur/create');
@@ -170,7 +179,8 @@ final class VisiteurController extends Controller
             $cp,
             $date_embauche,
             $login,
-            $mdp
+            $mdp,
+            $role
         );
         $_SESSION['flash'] = 'visiteur créé avec succès.';
         $this->redirect('/visiteur/' . $id);

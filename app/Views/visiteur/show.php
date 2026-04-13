@@ -28,6 +28,8 @@
         <p><strong>Date embauche :</strong> <?= htmlspecialchars($visiteur['DATE_EMBAUCHE']) ?></p>
         <p><strong>Login :</strong> <?= htmlspecialchars($visiteur['LOGIN']) ?></p>
         <p><strong>Mot de passe :</strong> <?= htmlspecialchars($visiteur['MDP']) ?></p>
+        <p><strong>Role:</strong> <?= htmlspecialchars($visiteur['role']) ?></p>
+
         </div>
         <a class="button" href="../visiteur">⬅ Retour à la liste</a>
     <?php else: ?>

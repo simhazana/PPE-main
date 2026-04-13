@@ -166,6 +166,8 @@
                     <th>Date d'embauche</th>
                     <th>Login</th>
                     <th>Mdp</th>
+                    <th>role</th>
+
 
                 </tr>
             </thead>
@@ -181,6 +183,8 @@
                         <td><?= htmlspecialchars((string)$vis['date_embauche']) ?></td>
                         <td><?= htmlspecialchars((string)$vis['login']) ?></td>
                         <td><?= htmlspecialchars((string)$vis['mdp']) ?></td>
+                        <td><?= htmlspecialchars((string)$vis['role']) ?></td>
+
                         <td class="actions">
                             <a href="./visiteur/<?= urlencode($vis['id']) ?>">Voir</a>
                             <a href="./visiteur/<?= urlencode($vis['id']) ?>/edit">Modifier</a>

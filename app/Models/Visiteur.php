@@ -30,12 +30,15 @@ final class Visiteur
         string $cp,
         string $date_embauche,
         string $login,
-        string $mdp
+        string $mdp,
+        string $role
         ): int
     {
         $pdo = Database::get();
-        $st  = $pdo->prepare('INSERT INTO visiteur (nom,prenom,adresse,ville,cp,date_embauche,login,mdp) VALUES (?,?,?,?,?,?,?,?)');
-        $st->execute([$nom, $prenom, $adresse, $ville, $cp, $date_embauche, $login, $mdp]);
+        $st  = $pdo->prepare('INSERT INTO visiteur 
+        (nom,prenom,adresse,ville,cp,date_embauche,login,mdp,role) 
+        VALUES (?,?,?,?,?,?,?,?,?)');
+        $st->execute([$nom, $prenom, $adresse, $ville, $cp, $date_embauche, $login, $mdp, $role]);
         return (int)$pdo->lastInsertId();
     }
 
@@ -47,7 +50,9 @@ final class Visiteur
         string $ville,
         string $cp,
         string $date_embauche,
-        string $login
+        string $login,
+        string $role
+
         /*,
         string $mdp*/
         ): bool
@@ -60,7 +65,8 @@ final class Visiteur
         ville = ?, 
         cp  = ?,
         date_embauche = ?, 
-        login = ?
+        login = ?,
+        role=?
         WHERE id = ?'
         );
 
@@ -72,7 +78,8 @@ final class Visiteur
         $cp, 
         $date_embauche, 
         $login,
-        $id
+        $id,
+        $role
         /*$mdp*/
         
         ]);

@@ -134,6 +134,22 @@
                     <?= htmlspecialchars($errors['login'], ENT_QUOTES, 'UTF-8'); ?>
                 </div>
             <?php endif; ?>
+
+            <label for="role">role*</label>
+            <input
+                type="text"
+                name="role"
+                id="role"
+                value="<?= htmlspecialchars($old['login'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+                required
+                autofocus
+            >
+      
+             <?php if (!empty($errors['role'])): ?>
+                <div class="error">
+                    <?= htmlspecialchars($errors['role'], ENT_QUOTES, 'UTF-8'); ?>
+                </div>
+            <?php endif; ?>
     </div>
     </div>
 
