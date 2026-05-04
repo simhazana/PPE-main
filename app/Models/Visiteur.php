@@ -10,7 +10,7 @@ final class Visiteur
     public static function findAll(): array
     {
         $pdo = Database::get();
-        $st  = $pdo->query('SELECT id,nom,prenom,adresse,ville,cp,date_embauche,login,mdp FROM  visiteur ORDER BY id');
+        $st  = $pdo->query('SELECT id,nom,prenom,adresse,ville,cp,date_embauche,login,mdp,role FROM  visiteur ORDER BY id');
         return $st->fetchAll(); // FETCH_ASSOC déjà par défaut via Database
     }
     public static function findById(int $id): ?array
@@ -92,5 +92,14 @@ public static function delete(int $id): bool
     $st  = $pdo->prepare('DELETE FROM visiteur WHERE id = ?');
     return $st->execute([$id]);
 }
+
+public static function findByUsername(string $login): ?array
+    {
+        $pdo = Database::get();
+        $st  = $pdo->prepare('SELECT id, nom, prenom, login, mdp, role FROM visiteur WHERE login = ?');
+        $st->execute([$login]);
+        $row = $st->fetch();
+        return $row ?: null;
+    }
 
 }

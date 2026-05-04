@@ -1,7 +1,7 @@
 <?php
 namespace Controllers;
 use Core\Controller;
-use Models\User;
+use Models\Visiteur;
 
 final class AuthController extends Controller {
 
@@ -26,7 +26,7 @@ final class AuthController extends Controller {
             $this->redirect('/');
         }
 
-        $user = User::findByUsername($username);
+        $user = Visiteur::findByUsername($username);
         if (!$user || !password_verify($password, $user['mdp'])) {
             $_SESSION['flash'] = 'Mauvais identifiant ou mot de passe';
             $this->redirect('/');
@@ -34,6 +34,8 @@ final class AuthController extends Controller {
 
         $_SESSION['uid'] = (int)$user['id'];
         $_SESSION['name'] = $user['login'];
+        $_SESSION['nom'] = $user['nom'];
+        $_SESSION['prenom'] = $user['prenom'];  
         $this->redirect('/dashboard');
     }
 

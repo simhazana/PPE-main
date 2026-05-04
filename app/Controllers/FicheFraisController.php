@@ -21,7 +21,7 @@ final class FicheFraisController extends Controller
             $ficheFrais = [];
         }
 
-        $this->render('ficheFrais/index', [
+        $this->render('fichefrais/index', [
             'title'   => 'Liste des frais forfait',
             'ficheFrais'   => $ficheFrais,
             'message' => $_SESSION['flash'] ?? '',
@@ -37,9 +37,7 @@ final class FicheFraisController extends Controller
     try {
         $ficheFrais = \Models\FicheFrais::findById($idvisiteur,$mois);
         if (!$ficheFrais) {
-            http_response_code(404);
-            $_SESSION['flash'] = 'fiche frais introuvable.';
-            $this->redirect('/ficheFrais');
+            $this->redirect('/fichefrais');
             return;
         }
     } catch (\Throwable $e) {
@@ -48,7 +46,7 @@ final class FicheFraisController extends Controller
         $ficheFrais = null;
     }
 
-    $this->render('ficheFrais/show', [
+    $this->render('fichefrais/show', [
         'title' => 'Détail du frais forfait',
         'ficheFrais'  => $ficheFrais,
         'message' => $_SESSION['flash'] ?? '',
@@ -62,7 +60,7 @@ public function create(): void
     {
         if (empty($_SESSION['uid'])) $this->redirect('/');// redirect, render= fichier index qui redirige
 
-        $this->render('ficheFrais/create', [ // va afficher la vue
+        $this->render('fichefrais/create', [ // va afficher la vue
             'title'   => 'Créer un frais',
             'message' => $_SESSION['flash'] ?? '', // flash= erreur
             'old'     => $_SESSION['old'] ?? ['libelle' => ''],
@@ -102,45 +100,46 @@ public function create(): void
         $_SESSION['errors'] = $errors;
         $_SESSION['old']    = ['libelle' => $libelle,'montant'=> $montant];
         $_SESSION['flash']  = 'Merci de corriger les erreurs du formulaire.';
-        $this->redirect('./ficheFrais/create');
+        $this->redirect('./fichefrais/create');
     }
 
     try { // si ca marche
         $id = \Models\FicheFrais::create($libelle,$montant); 
         $_SESSION['flash'] = 'Frais créé avec succès.';
-        $this->redirect('./ficheFrais/' . $id);
+        $this->redirect('./fichefrais/' . $id);
     } catch (\Throwable $e) { // si ca marche pas
         $_SESSION['flash'] = 'Impossible de créer le frais.';
-        $this->redirect('./ficheFrais');
+        $this->redirect('./fichefrais');
     }
 }
 
   // ---------- EDIT (GET) ----------
-public function edit($id): void
+public function edit($id,$mois): void
 {
     if (empty($_SESSION['uid'])) $this->redirect('/');
 
     $id = (int)$id;
 
     try {
-        $ficheFrais = \Models\FicheFrais::findById($id);
+        $ficheFrais = \Models\FicheFrais::findById($id,$mois);
         if (!$ficheFrais) {
             $_SESSION['flash'] = "Frais forfait introuvable.";
-            $this->redirect('./ficheFrais');
+            $this->redirect('./fichefrais');
         }
     } catch (\Throwable $e) {
         $_SESSION['flash'] = "Erreur lors du chargement du frais forfait.";
-        $this->redirect('./ficheFrais');
+        $this->redirect('./fichefrais');
     }
 
     // remplissage auto
     $old = $_SESSION['old'] ?? [
-        'libelle' => $ficheFrais['libelle'],
-        'montant' => $ficheFrais['montant']
+        'nbrJustificatifs' => $ficheFrais['nbrJustificatifs'],
+        'montantValide'    => $ficheFrais['montantValide'],
+        'dateModif'        => $ficheFrais['dateModif'],
         ];
 
 
-    $this->render('ficheFrais/edit', [
+    $this->render('fichefrais/edit', [
         'title'   => 'Modifier un frais forfait',
         'ficheFrais'  => $ficheFrais,
         /*'montant' => $montant,*/
@@ -155,41 +154,38 @@ public function edit($id): void
 }
 
 // ---------- UPDATE (POST) ----------
-public function update($id): void
+public function update($idvisiteur, $mois): void
 {
-
     if (empty($_SESSION['uid'])) $this->redirect('/');
 
-    $id = (int)$id;
-    $libelle = trim($_POST['libelle'] ?? '');
-    $montant = trim($_POST['montant'] ?? '');
+    $nbrJustificatifs = trim($_POST['nbrJustificatifs'] ?? '');
+    $montantValide    = trim($_POST['montantValide'] ?? '');
+    $dateModif        = trim($_POST['dateModif'] ?? '');
 
     $errors = [];
 
-    if ($libelle === '') {
-        $errors['libelle'] = 'Le libellé est obligatoire.';
+    if ($nbrJustificatifs === '') {
+        $errors['nbrJustificatifs'] = 'Le nombre de justificatifs est obligatoire.';
     }
-
-    if ($montant === '') {
-        $errors['montant'] = 'Le montant est obligatoire.';
+    if ($montantValide === '') {
+        $errors['montantValide'] = 'Le montant est obligatoire.';
     }
 
     if ($errors) {
         $_SESSION['errors'] = $errors;
-        $_SESSION['old'] = ['libelle' => $libelle,'montant' => $montant];
-        $_SESSION['flash'] = "Merci de corriger les erreurs.";
-        $this->redirect("./ficheFrais/$id/edit");
+        $_SESSION['old']    = compact('nbrJustificatifs', 'montantValide', 'dateModif');
+        $_SESSION['flash']  = "Merci de corriger les erreurs.";
+        $this->redirect("/fichefrais/$idvisiteur/$mois/edit");
     }
 
-
-
     try {
-        \Models\FicheFrais::update($id, $libelle, $montant);
-        $_SESSION['flash'] = "Frais Forfait modifié avec succès.";
-        $this->redirect("./ficheFrais/$id");
+        \Models\FicheFrais::update($idvisiteur, $mois, $nbrJustificatifs, $montantValide, $dateModif);
+        $_SESSION['flash'] = "Fiche frais modifiée avec succès.";
+        $this->redirect("/fichefrais/$idvisiteur/$mois");
     } catch (\Throwable $e) {
+        error_log($e->getMessage());
         $_SESSION['flash'] = "Erreur lors de la mise à jour.";
-        $this->redirect("./ficheFrais");
+        $this->redirect("/fichefrais");
     }
 }
 
@@ -216,7 +212,29 @@ public function update($id): void
         $_SESSION['flash'] = "Erreur lors de la suppression du Frais forfait.";
     }
 
-    $this->redirect('/ficheFrais');
+    $this->redirect('/fichefrais');
+}
+
+public function validate($idvisiteur, $mois): void
+{
+    if (empty($_SESSION['uid'])) $this->redirect('/');
+
+    try {
+        // On appelle le modèle pour changer l'état (souvent 'VA' pour Validée dans GSB)
+        $ok = \Models\FicheFrais::validate($idvisiteur, $mois);
+
+        if ($ok) {
+            $_SESSION['flash'] = "fiche frais validée!";
+        } else {
+            $_SESSION['flash'] = "Erreur lors de la validation.";
+        }
+    } catch (\Throwable $e) {
+        error_log($e->getMessage());
+        $_SESSION['flash'] = "Erreur technique lors de la validation.";
+    }
+
+    // Redirection vers la liste
+    $this->redirect('/fichefrais');
 }
 
 }

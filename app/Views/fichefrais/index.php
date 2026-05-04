@@ -139,7 +139,7 @@
 </head>
 <body>
     <div class="topbar">
-        <h1 style="margin:0;">Liste des fiches frais</h1>
+        <h1 style="margin:0;">Liste des fiches frais de <?= htmlspecialchars(($_SESSION['prenom'] ?? '') . ' ' . ($_SESSION['nom'] ?? '')) ?></h1>
         <a class="button" href="./dashboard">Dashboard</a>
         <a class="button" href="./logout">Se déconnecter</a>
     </div>
@@ -174,23 +174,25 @@
                         <td><?= htmlspecialchars((string)$fiche['nbrJustificatifs']) ?></td>
                         <td><?= htmlspecialchars((string)($fiche['montantValide'])) ?></td>
                         <td><?= htmlspecialchars((string)$fiche['dateModif']) ?></td>
-                        <td><?= htmlspecialchars((string)$fiche['idLigneFraisHorsForfait']) ?></td>
-                        <td><?= htmlspecialchars((string)$fiche['idEtat']) ?></td>
+                        <td><?= htmlspecialchars((string)$fiche['libelleHorsForfait']) ?></td>
+                        <td><?= htmlspecialchars((string)$fiche['libelleEtat']) ?></td>
+                        
+                        <td class="actions">
+    <a href="./fichefrais/<?= urlencode($fiche['idVisiteur']) ?>/<?= urlencode($fiche['mois']) ?>">Voir</a>
+    
+    <form action="./fichefrais/<?= urlencode($fiche['idVisiteur']) ?>/<?= urlencode($fiche['mois']) ?>/validate" 
+          method="post" style="display:inline">
+        <button type="submit" style="background-color: #7a9e7e; color: white; border-color: #6a8e6e;">
+            Valider
+        </button>
+    </form>
 
-                            <td class="actions">
-                            <a href="./fichefrais/<?= urlencode($fiche['idVisiteur']) ?>/<?= urlencode($fiche['mois']) ?>">Voir</a>
-                            <a href="./fichefrais/<?= urlencode($fiche['idVisiteur']) ?>/edit">Modifier</a>
-                             <form action="./fichefrais/<?= urlencode($fiche['idVisiteur']) ?>/delete"
-                             method="post"
-                             style="display:inline"
-                             onsubmit="return confirm('Supprimer cette fiche frais ? Cette action est définitive.');">
-                                <button type="submit">Supprimer
-
-                                </button>
-                            </form>
-                            
-                        </td>   
-                      
+    <a href="./fichefrais/<?= urlencode($fiche['idVisiteur']) ?>/<?= urlencode($fiche['mois']) ?>/edit">Modifier</a>
+    
+    <form action="./fichefrais/<?= urlencode($fiche['idVisiteur']) ?>/delete" method="post" style="display:inline" onsubmit="return confirm('Supprimer ?');">
+        <button type="submit">Supprimer</button>
+    </form>
+</td>
 
 </a></td>
                     </tr>

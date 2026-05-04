@@ -15,11 +15,8 @@ final class FicheFrais
         FicheFrais.nbrJustificatifs,
         FicheFrais.montantValide,
         FicheFrais.dateModif,
-        FicheFrais.idLigneFraisHorsForfait,
-        FicheFrais.idEtat
-
-        /*FraisHorForfait.libelle AS LibelleHorForfait,
-        Etat.libelle AS LibelleEtat*/
+        Fraishorsforfait.libelle AS libelleHorsForfait,
+        etat.libelle AS libelleEtat
         
         FROM 
             FicheFrais 
@@ -34,13 +31,25 @@ final class FicheFrais
         return $st->fetchAll(); 
     }
     public static function findById(int $idvisiteur,int $mois): ?array
-    {
-        $pdo = Database::get();
-        $st  = $pdo->prepare('SELECT * FROM FicheFrais WHERE idVisiteur = :id AND mois= :mois');
-        $st->execute([
-            'idVisiteur' => $idvisiteur,
-            'mois' => $mois
-            ]);
+{
+    $pdo = Database::get();
+    $st  = $pdo->prepare('SELECT 
+        FicheFrais.idVisiteur,
+        FicheFrais.mois,
+        FicheFrais.nbrJustificatifs,
+        FicheFrais.montantValide,
+        FicheFrais.dateModif,
+        FraisHorsForfait.libelle AS libelleHorsForfait,
+        Etat.libelle AS libelleEtat
+        FROM FicheFrais
+        JOIN FraisHorsForfait ON FicheFrais.idLigneFraisHorsForfait = FraisHorsForfait.id
+        JOIN Etat ON FicheFrais.idEtat = Etat.id
+        WHERE FicheFrais.idVisiteur = :idV AND FicheFrais.mois = :mois');
+    
+    $st->execute([
+        'idV'  => $idvisiteur,
+        'mois' => $mois
+    ]);
 
         $row = $st->fetch();
         return $row ?: null;
@@ -55,12 +64,11 @@ final class FicheFrais
 
     } 
 
-   public static function update(int $id, string $libelle,string $montant): bool
-   {
-
-        $pdo = Database::get();
-        $st  = $pdo->prepare('UPDATE ficheFrais SET libelle = ?, montant= ? WHERE id = ?');
-        return $st->execute([$libelle,  $montant, $id]);
+   public static function update(string $idvisiteur, string $mois, string $nbrJustificatifs, string $montantValide, string $dateModif): bool
+{
+    $pdo = Database::get();
+    $st  = $pdo->prepare('UPDATE FicheFrais SET nbrJustificatifs = ?, montantValide = ?, dateModif = ? WHERE idVisiteur = ? AND mois = ?');
+    return $st->execute([$nbrJustificatifs, $montantValide, $dateModif, $idvisiteur, $mois]);
 }
 
     public static function delete(int $id): bool
@@ -70,6 +78,13 @@ final class FicheFrais
     return $st->execute([$id]);
 }
 
+public static function validate(string $idvisiteur, string $mois): bool
+{
+    $pdo = Database::get();
+    // On change l'état à 'VA' (Validée). Adapte 'VA' selon les codes de ta table 'Etat'
+    $st = $pdo->prepare('UPDATE FicheFrais SET idEtat = ?, dateModif = NOW() WHERE idVisiteur = ? AND mois = ?');
+return $st->execute([3, $idvisiteur, $mois]);
+}
 
 }  
 

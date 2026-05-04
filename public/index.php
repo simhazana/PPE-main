@@ -88,19 +88,21 @@ $router->post('/fichefrais/create',  [Controllers\FicheFraisController::class, '
 $router->get ('#^/fichefrais/([^/]+)/([^/]+)/edit$#',   [Controllers\FicheFraisController::class, 'edit']);
 $router->post('#^/fichefrais/([^/]+)/([^/]+)/edit$#', [Controllers\FicheFraisController::class, 'update']);
 $router->post('#^/fichefrais/([^/]+)/([^/]+)/delete$#', [Controllers\FicheFraisController::class, 'delete']);
+$router->post('#^/fichefrais/([^/]+)/([^/]+)/validate$#', [Controllers\FicheFraisController::class, 'validate']);
 $router->get ('#^/fichefrais/([^/]+)/([^/]+)$#',        [Controllers\FicheFraisController::class, 'show']);
-
 
 
 // Normalisation du path (gère le projet dans un sous-dossier, ex. /monapp/public)
 $requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $scriptDir   = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '')), '/'); // ex: /monapp/public
 
+
 if ($scriptDir !== '' && $scriptDir !== '/' && strncmp($requestPath, $scriptDir, strlen($scriptDir)) === 0) {
     $requestPath = substr($requestPath, strlen($scriptDir)) ?: '/';
 }
 
 if ($requestPath === '/index.php') $requestPath = '/';
+
 
 // Fallback manuel si le Router n'accroche pas la regex // copier pour visiteur(fait)
 if (preg_match('#^' . preg_quote($scriptDir, '#') . '/etat/([0-9]+)$#', $_SERVER['REQUEST_URI'] ?? '', $m)
@@ -220,14 +222,6 @@ if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fraisHorsForfait/([0-9]+)/
 }
 
 
-
-
-
-
-
-
-
-
 // Fallback manuel pour /visiteur/{id}/edit
 if (preg_match('#^' . preg_quote($scriptDir, '#') . '/visiteur/([0-9]+)/edit$#', $_SERVER['REQUEST_URI'] ?? '', $m)
     || preg_match('#^/visiteur/([0-9]+)/edit$#', $requestPath, $m)) {
@@ -259,14 +253,8 @@ if (preg_match('#^' . preg_quote($scriptDir, '#') . '/visiteur/([0-9]+)/delete$#
 }
 
 
-if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fichefrais/([0-9]+)/([0-9]+)$#', $_SERVER['REQUEST_URI'] ?? '', $m)
-    || preg_match('#^/fichefrais/([0-9]+)/([0-9]+)$#', $requestPath, $m)) {
-    (new \Controllers\FicheFraisController)->show((int)$m[1],(int)$m[2]);
-    exit;
-}
-
-if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fichefrais/([0-9]+)/([0-9]+)/edit$#', $_SERVER['REQUEST_URI'] ?? '', $m)
-    || preg_match('#^/fichefrais/([0-9]+)/([0-9]+)/edit$#', $requestPath, $m)) {
+if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fichefrais/([^/]+)/([^/]+)/edit$#', $_SERVER['REQUEST_URI'] ?? '', $m)
+    || preg_match('#^/fichefrais/([^/]+)/([^/]+)/edit$#', $requestPath, $m)) {
 
     $id = (int)$m[1];
     $mois = (int)$m[2];
@@ -279,8 +267,8 @@ if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fichefrais/([0-9]+)/([0-9]
     exit;
 }
 
-if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fichefrais/([0-9]+)/([0-9]+)/delete$#', $_SERVER['REQUEST_URI'] ?? '', $m)
-    || preg_match('#^/fichefrais/([0-9]+)/([0-9]+)/delete$#', $requestPath, $m)) {
+if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fichefrais/([^/]+)/([^/]+)/delete$#', $_SERVER['REQUEST_URI'] ?? '', $m)
+    || preg_match('#^/fichefrais/([^/]+)/([^/]+)/delete$#', $requestPath, $m)) {
 
     $id = (int)$m[1];
     $mois = (int)$m[2];
@@ -294,7 +282,22 @@ if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fichefrais/([0-9]+)/([0-9]
     exit;
 }
 
+if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fichefrais/([^/]+)/([^/]+)/validate$#', $_SERVER['REQUEST_URI'] ?? '', $m)
+    || preg_match('#^/fichefrais/([^/]+)/([^/]+)/validate$#', $requestPath, $m)) {
 
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+        (new \Controllers\FicheFraisController)->validate($m[1], $m[2]);
+    } else {
+        header('Location: /fichefrais');
+    }
+    exit;
+}
+
+if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fichefrais/([^/]+)/([^/]+)$#', $_SERVER['REQUEST_URI'] ?? '', $m)
+    || preg_match('#^/fichefrais/([^/]+)/([^/]+)$#', $requestPath, $m)) {
+    (new \Controllers\FicheFraisController)->show((int)$m[1],(int)$m[2]);
+    exit;
+}
 
 
 $router->dispatch($_SERVER['REQUEST_METHOD'] ?? 'GET', $requestPath);
