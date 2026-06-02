@@ -88,8 +88,11 @@ $router->post('/fichefrais/create',  [Controllers\FicheFraisController::class, '
 $router->get ('#^/fichefrais/([^/]+)/([^/]+)/edit$#',   [Controllers\FicheFraisController::class, 'edit']);
 $router->post('#^/fichefrais/([^/]+)/([^/]+)/edit$#', [Controllers\FicheFraisController::class, 'update']);
 $router->post('#^/fichefrais/([^/]+)/([^/]+)/delete$#', [Controllers\FicheFraisController::class, 'delete']);
-$router->post('#^/fichefrais/([^/]+)/([^/]+)/validate$#', [Controllers\FicheFraisController::class, 'validate']);
-$router->get ('#^/fichefrais/([^/]+)/([^/]+)$#',        [Controllers\FicheFraisController::class, 'show']);
+$router->post('#^/fichefrais/([^/]+)/([^/]+)/validate$#',  [Controllers\FicheFraisController::class, 'validate']);
+$router->post('#^/fichefrais/([^/]+)/([^/]+)/refuse$#',   [Controllers\FicheFraisController::class, 'refuse']);
+$router->post('#^/fichefrais/([^/]+)/([^/]+)/cloture$#',  [Controllers\FicheFraisController::class, 'cloture']);
+$router->post('#^/fichefrais/([^/]+)/([^/]+)/rembourse$#',[Controllers\FicheFraisController::class, 'rembourse']);
+$router->get ('#^/fichefrais/([^/]+)/([^/]+)$#',          [Controllers\FicheFraisController::class, 'show']);
 
 
 // Normalisation du path (gère le projet dans un sous-dossier, ex. /monapp/public)
@@ -284,12 +287,33 @@ if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fichefrais/([^/]+)/([^/]+)
 
 if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fichefrais/([^/]+)/([^/]+)/validate$#', $_SERVER['REQUEST_URI'] ?? '', $m)
     || preg_match('#^/fichefrais/([^/]+)/([^/]+)/validate$#', $requestPath, $m)) {
-
     if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         (new \Controllers\FicheFraisController)->validate($m[1], $m[2]);
-    } else {
-        header('Location: /fichefrais');
-    }
+    } else { header('Location: /fichefrais'); }
+    exit;
+}
+
+if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fichefrais/([^/]+)/([^/]+)/refuse$#', $_SERVER['REQUEST_URI'] ?? '', $m)
+    || preg_match('#^/fichefrais/([^/]+)/([^/]+)/refuse$#', $requestPath, $m)) {
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+        (new \Controllers\FicheFraisController)->refuse($m[1], $m[2]);
+    } else { header('Location: /fichefrais'); }
+    exit;
+}
+
+if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fichefrais/([^/]+)/([^/]+)/cloture$#', $_SERVER['REQUEST_URI'] ?? '', $m)
+    || preg_match('#^/fichefrais/([^/]+)/([^/]+)/cloture$#', $requestPath, $m)) {
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+        (new \Controllers\FicheFraisController)->cloture($m[1], $m[2]);
+    } else { header('Location: /fichefrais'); }
+    exit;
+}
+
+if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fichefrais/([^/]+)/([^/]+)/rembourse$#', $_SERVER['REQUEST_URI'] ?? '', $m)
+    || preg_match('#^/fichefrais/([^/]+)/([^/]+)/rembourse$#', $requestPath, $m)) {
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+        (new \Controllers\FicheFraisController)->rembourse($m[1], $m[2]);
+    } else { header('Location: /fichefrais'); }
     exit;
 }
 

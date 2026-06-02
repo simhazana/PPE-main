@@ -145,7 +145,7 @@
         <a class="button" href="./fraisForfait">Frais forfait</a>
     </div>
 
-    <a class="button" href="./visiteur/create">➕ Ajouter un état</a>
+    <a class="button" href="./visiteur/create">➕ Ajouter un visiteur</a>
 
     <?php if (!empty($message)): ?>
         <div class="flash"><?= htmlspecialchars($message) ?></div>

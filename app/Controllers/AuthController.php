@@ -32,10 +32,11 @@ final class AuthController extends Controller {
             $this->redirect('/');
         }
 
-        $_SESSION['uid'] = (int)$user['id'];
-        $_SESSION['name'] = $user['login'];
-        $_SESSION['nom'] = $user['nom'];
-        $_SESSION['prenom'] = $user['prenom'];  
+        $_SESSION['uid']    = (int)$user['id'];
+        $_SESSION['name']   = $user['login'];
+        $_SESSION['nom']    = $user['nom'];
+        $_SESSION['prenom'] = $user['prenom'];
+        $_SESSION['role']   = $user['role']; // 'Visiteur' ou 'Comptable'
         $this->redirect('/dashboard');
     }
 
@@ -53,7 +54,4 @@ final class AuthController extends Controller {
         session_destroy();
         $this->redirect('/');
     }
-   
-    
-
 }
