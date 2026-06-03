@@ -25,7 +25,7 @@ final class FicheFrais
         return $st->fetchAll();
     }
 
-    // Fiches d'un visiteur spécifique (visiteur connecté)
+    // Fiches d'un visiteur spécifique
     public static function findByVisiteur(int $idVisiteur): array
     {
         $pdo = Database::get();
@@ -65,6 +65,24 @@ final class FicheFrais
         return $row ?: null;
     }
 
+    // Création complète avec tous les champs
+    public static function createFull(
+        int $idVisiteur,
+        int $mois,
+        int $nbrJustificatifs,
+        float $montantValide,
+        string $dateModif,
+        int $idLigneFraisHorsForfait,
+        int $idEtat
+    ): void {
+        $pdo = Database::get();
+        $st  = $pdo->prepare('INSERT INTO ficheFrais 
+            (idVisiteur, mois, nbrJustificatifs, montantValide, dateModif, idLigneFraisHorsForfait, idEtat) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)');
+        $st->execute([$idVisiteur, $mois, $nbrJustificatifs, $montantValide, $dateModif, $idLigneFraisHorsForfait, $idEtat]);
+    }
+
+    // Création minimale (ancienne méthode conservée)
     public static function create(string $visiteur, string $mois): int
     {
         $pdo = Database::get();
@@ -92,7 +110,6 @@ final class FicheFrais
         return self::setEtat($idvisiteur, $mois, 3);
     }
 
-    // Change l'état d'une fiche frais (id de la table etat)
     public static function setEtat(string $idvisiteur, string $mois, int $idEtat): bool
     {
         $pdo = Database::get();

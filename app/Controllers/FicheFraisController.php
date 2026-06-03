@@ -4,6 +4,8 @@ namespace Controllers;
 use Core\Controller;
 use Models\FicheFrais;
 use Models\Visiteur;
+use Models\Etat;
+use Models\FraisHorsForfait;
 
 final class FicheFraisController extends Controller
 {
@@ -13,10 +15,8 @@ final class FicheFraisController extends Controller
 
         try {
             if ($this->isComptable()) {
-                // Le comptable voit toutes les fiches avec le nom du visiteur
                 $ficheFrais = FicheFrais::findAll();
             } else {
-                // Le visiteur ne voit que ses propres fiches
                 $ficheFrais = FicheFrais::findByVisiteur((int)$_SESSION['uid']);
             }
         } catch (\Throwable $e) {
@@ -57,11 +57,16 @@ final class FicheFraisController extends Controller
     public function create(): void
     {
         $this->requireAuth();
+
+        // On passe les listes déroulantes à la vue
         $this->render('fichefrais/create', [
-            'title'   => 'Créer une fiche frais',
-            'message' => $_SESSION['flash'] ?? '',
-            'old'     => $_SESSION['old'] ?? [],
-            'errors'  => $_SESSION['errors'] ?? [],
+            'title'            => 'Créer une fiche frais',
+            'message'          => $_SESSION['flash'] ?? '',
+            'old'              => $_SESSION['old'] ?? [],
+            'errors'           => $_SESSION['errors'] ?? [],
+            'visiteurs'        => Visiteur::findAll(),
+            'etats'            => Etat::findAll(),
+            'fraisHorsForfaits'=> FraisHorsForfait::findAll(),
         ]);
         unset($_SESSION['flash'], $_SESSION['old'], $_SESSION['errors']);
     }
@@ -71,18 +76,37 @@ final class FicheFraisController extends Controller
         $this->requireAuth();
 
         $visiteur         = trim($_POST['visiteur'] ?? '');
-        $mois             = $_POST['mois'] ?? '';
+        $mois             = trim($_POST['mois'] ?? '');
         $nbrJustificatifs = trim($_POST['nbrJustificatifs'] ?? '');
-        $montantValide    = $_POST['montantValide'] ?? '';
+        $montantValide    = trim($_POST['montantValide'] ?? '');
         $dateModif        = trim($_POST['dateModif'] ?? '');
-        $fraisHorsForfait = $_POST['fraishorsforfait'] ?? '';
+        $fraisHorsForfait = trim($_POST['fraishorsforfait'] ?? '');
         $etat             = trim($_POST['etat'] ?? '');
 
+        $errors = [];
+
+        if ($visiteur === '')         $errors['visiteur']         = 'Le visiteur est obligatoire.';
+        if ($mois === '' || !preg_match('/^[0-9]{6}$/', $mois))
+                                      $errors['mois']             = 'Le mois est obligatoire (format AAAAMM).';
+        if ($nbrJustificatifs === '') $errors['nbrJustificatifs'] = 'Le nombre de justificatifs est obligatoire.';
+        if ($montantValide === '')    $errors['montantValide']    = 'Le montant est obligatoire.';
+        if ($dateModif === '')        $errors['dateModif']        = 'La date est obligatoire.';
+        if ($fraisHorsForfait === '') $errors['fraishorsforfait'] = 'Le frais hors forfait est obligatoire.';
+        if ($etat === '')             $errors['etat']             = "L'état est obligatoire.";
+
+        if (!empty($errors)) {
+            $_SESSION['errors'] = $errors;
+            $_SESSION['old']    = compact('visiteur','mois','nbrJustificatifs','montantValide','dateModif','fraisHorsForfait','etat');
+            $_SESSION['flash']  = 'Merci de corriger les erreurs.';
+            $this->redirect('/fichefrais/create');
+        }
+
         try {
-            $id = FicheFrais::create($visiteur, $mois);
+            FicheFrais::createFull($visiteur, $mois, $nbrJustificatifs, $montantValide, $dateModif, $fraisHorsForfait, $etat);
             $_SESSION['flash'] = 'Fiche frais créée avec succès.';
             $this->redirect('/fichefrais');
         } catch (\Throwable $e) {
+            error_log($e->getMessage());
             $_SESSION['flash'] = 'Impossible de créer la fiche frais.';
             $this->redirect('/fichefrais');
         }
@@ -168,26 +192,25 @@ final class FicheFraisController extends Controller
     public function validate($idvisiteur, $mois): void
     {
         $this->requireComptable();
-        $this->changerEtat($idvisiteur, $mois, 3, 'Validé'); // id 3 = Validé
+        $this->changerEtat($idvisiteur, $mois, 3, 'Validé');
     }
 
     public function refuse($idvisiteur, $mois): void
     {
         $this->requireComptable();
-        // On crée l'état Refusé en BDD s'il n'existe pas encore (id à adapter selon ta BDD)
-        $this->changerEtat($idvisiteur, $mois, 10, 'Refusé'); // id 10 = Refusé (à adapter)
+        $this->changerEtat($idvisiteur, $mois, 10, 'Refusé');
     }
 
     public function cloture($idvisiteur, $mois): void
     {
         $this->requireComptable();
-        $this->changerEtat($idvisiteur, $mois, 2, 'Clôturé'); // id 2 = Clôturé
+        $this->changerEtat($idvisiteur, $mois, 2, 'Clôturé');
     }
 
     public function rembourse($idvisiteur, $mois): void
     {
         $this->requireComptable();
-        $this->changerEtat($idvisiteur, $mois, 7, 'Remboursé'); // id 7 = Remboursé
+        $this->changerEtat($idvisiteur, $mois, 7, 'Remboursé');
     }
 
     private function changerEtat(string $idvisiteur, string $mois, int $idEtat, string $libelle): void
