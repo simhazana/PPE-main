@@ -23,7 +23,8 @@ $router->get('#^/etat/([0-9]+)$#', [Controllers\EtatController::class, 'show']);
 $router->get('/etat',       [Controllers\EtatController::class, 'index']);// copier pour visiteur
 
 $router->get('/etat/',       [Controllers\EtatController::class, 'index']);// copier pour visiteur
-
+$router->get ('/inscription', [Controllers\AuthController::class, 'inscription']);
+$router->post('/inscription', [Controllers\VisiteurController::class, 'store']);
 // --- routes create ---
 $router->get ('/etat/create',       [Controllers\EtatController::class, 'create']);
 $router->post('/etat/create',       [Controllers\EtatController::class, 'store']);

@@ -14,6 +14,17 @@ final class AuthController extends Controller {
         ]);
         unset($_SESSION['flash']);
     }
+
+public function inscription(): void {
+    $this->render('visiteur/create', [
+        'title'   => 'Inscription',
+        'message' => $_SESSION['flash'] ?? '',
+        'old'     => [],
+        'errors'  => [],
+        'inscription' => true,
+    ]);
+    unset($_SESSION['flash']);
+}
   
     public function doLogin(): void {
         if (!$this->checkCsrf($_POST['csrf'] ?? null)) { http_response_code(400); exit('CSRF'); }

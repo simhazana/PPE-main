@@ -47,7 +47,8 @@
 <body>
 <div class="container">
     <div class="topbar">
-        <h1>Créer une fiche frais</h1>
+        <h1>Créer une fiche frais<br><br>Frais forfait</h1>
+
         <a class="button" href="../dashboard">Dashboard</a>
         <a class="button" href="../fichefrais">Retour</a>
     </div>
@@ -86,45 +87,34 @@
             <?php endif; ?>
         </div>
 
-        <div class="field">
-            <label for="mois">Mois (format AAAAMM) *</label>
-            <input type="text" name="mois" id="mois"
-                   placeholder="ex: 202508"
-                   value="<?= htmlspecialchars($old['mois'] ?? '') ?>"
-                   pattern="[0-9]{6}" title="Format AAAAMM, ex: 202508" required>
-            <p class="hint">Exemple : 202508 pour août 2025</p>
-            <?php if (!empty($errors['mois'])): ?>
-                <div class="error"><?= htmlspecialchars($errors['mois']) ?></div>
+            <div class="field">
+            <label for="fraisforfait">Frais forfait *</label>
+            <select name="fraisforfait" id="fraisforfait" required>
+                <option value="">-- Choisir un frais forfait --</option>
+                <?php foreach ($fraisForfaits ?? [] as $f): ?>
+                    <option value="<?= $f['id'] ?>"
+                        <?= ($old['fraisforfait'] ?? '') == $f['id'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($f['libelle'] . ' — ' . $f['montant'] . ' €') ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <?php if (!empty($errors['fraishorsforfait'])): ?>
+                <div class="error"><?= htmlspecialchars($errors['fraishorsforfait']) ?></div>
             <?php endif; ?>
         </div>
 
         <div class="field">
-            <label for="nbrJustificatifs">Nombre de justificatifs *</label>
-            <input type="number" name="nbrJustificatifs" id="nbrJustificatifs" min="0"
-                   value="<?= htmlspecialchars($old['nbrJustificatifs'] ?? '0') ?>" required>
-            <?php if (!empty($errors['nbrJustificatifs'])): ?>
-                <div class="error"><?= htmlspecialchars($errors['nbrJustificatifs']) ?></div>
+            <label for=" Quantité"> Quantité *</label>
+            <input type="number" name="quantite" id="quantite" min="0"
+                   value="<?= htmlspecialchars($old['quantite'] ?? '0') ?>" required>
+            <?php if (!empty($errors['quantite'])): ?>
+                <div class="error"><?= htmlspecialchars($errors['quantite']) ?></div>
             <?php endif; ?>
         </div>
 
-        <div class="field">
-            <label for="montantValide">Montant validé (€) *</label>
-            <input type="number" name="montantValide" id="montantValide" min="0" step="0.01"
-                   value="<?= htmlspecialchars($old['montantValide'] ?? '0') ?>" required>
-            <?php if (!empty($errors['montantValide'])): ?>
-                <div class="error"><?= htmlspecialchars($errors['montantValide']) ?></div>
-            <?php endif; ?>
-        </div>
-
-        <div class="field">
-            <label for="dateModif">Date de modification *</label>
-            <input type="date" name="dateModif" id="dateModif"
-                   value="<?= htmlspecialchars($old['dateModif'] ?? date('Y-m-d')) ?>" required>
-            <?php if (!empty($errors['dateModif'])): ?>
-                <div class="error"><?= htmlspecialchars($errors['dateModif']) ?></div>
-            <?php endif; ?>
-        </div>
-
+        <h2>Frais hors forfait</h2>
+        <br>
+        
         <div class="field">
             <label for="fraishorsforfait">Frais hors forfait *</label>
             <select name="fraishorsforfait" id="fraishorsforfait" required>
@@ -142,20 +132,23 @@
         </div>
 
         <div class="field">
-            <label for="etat">État *</label>
-            <select name="etat" id="etat" required>
-                <option value="">-- Choisir un état --</option>
-                <?php foreach ($etats ?? [] as $e): ?>
-                    <option value="<?= $e['id'] ?>"
-                        <?= ($old['etat'] ?? '') == $e['id'] ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($e['libelle']) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-            <?php if (!empty($errors['etat'])): ?>
-                <div class="error"><?= htmlspecialchars($errors['etat']) ?></div>
+            <label for="dateModif">Date de modification *</label>
+            <input type="date" name="dateModif" id="dateModif"
+                   value="<?= htmlspecialchars($old['dateModif'] ?? date('Y-m-d')) ?>" required>
+            <?php if (!empty($errors['dateModif'])): ?>
+                <div class="error"><?= htmlspecialchars($errors['dateModif']) ?></div>
             <?php endif; ?>
         </div>
+        
+        <div class="field">
+            <label for="nbrJustificatifs">Nombre de justificatifs *</label>
+            <input type="number" name="nbrJustificatifs" id="nbrJustificatifs" min="0"
+                   value="<?= htmlspecialchars($old['nbrJustificatifs'] ?? '0') ?>" required>
+            <?php if (!empty($errors['nbrJustificatifs'])): ?>
+                <div class="error"><?= htmlspecialchars($errors['nbrJustificatifs']) ?></div>
+            <?php endif; ?>
+        </div>
+
 
         <div class="form-actions">
             <button type="submit">Enregistrer</button>

@@ -45,16 +45,19 @@
 <body>
 <div class="container">
     <div class="topbar">
-        <h1>Créer un visiteur</h1>
+        <h1><?= ($inscription ?? false) ? 'Inscription' : 'Créer un comptable' ?></h1>
+        <?php if (!($inscription ?? false)): ?>
         <a class="button" href="../dashboard">Dashboard</a>
         <a class="button" href="../visiteur">Retour</a>
+        <?php endif; ?>
     </div>
 
     <?php if (!empty($message)): ?>
         <div class="flash"><?= htmlspecialchars($message) ?></div>
     <?php endif; ?>
 
-    <form action="../visiteur/create" method="post">
+    <form action="<?= ($inscription ?? false) ? './inscription' : '../visiteur/create' ?>" method="post">
+
 
         <div class="field">
             <label for="nom">Nom *</label>
@@ -141,9 +144,13 @@
         </div>
 
         <div class="form-actions">
-            <button type="submit">Enregistrer</button>
-            <a class="button" href="../visiteur">Annuler</a>
-        </div>
+    <button type="submit">Enregistrer</button>
+    <?php if ($inscription ?? false): ?>
+        <a class="button" href="./">Retour à la connexion</a>
+    <?php else: ?>
+        <a class="button" href="../visiteur">Annuler</a>
+    <?php endif; ?>
+</div>
 
     </form>
 </div>

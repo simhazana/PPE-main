@@ -5,115 +5,179 @@ use Config\Database;
 
 final class FicheFrais
 {
-    // Toutes les fiches (comptable) — avec le nom du visiteur
+    // Toutes les fiches (comptable)
     public static function findAll(): array
     {
         $pdo = Database::get();
-        $st  = $pdo->query('SELECT 
-            FicheFrais.idVisiteur,
-            FicheFrais.mois,
-            FicheFrais.nbrJustificatifs,
-            FicheFrais.montantValide,
-            FicheFrais.dateModif,
-            CONCAT(visiteur.nom, \' \', visiteur.prenom) AS nomVisiteur,
-            FraisHorsForfait.libelle AS libelleHorsForfait,
-            Etat.libelle AS libelleEtat
-            FROM FicheFrais
-            JOIN visiteur ON FicheFrais.idVisiteur = visiteur.id
-            JOIN FraisHorsForfait ON FicheFrais.idLigneFraisHorsForfait = FraisHorsForfait.id
-            JOIN Etat ON FicheFrais.idEtat = Etat.id');
-        return $st->fetchAll();
+        $st  = $pdo->query('
+            SELECT
+                f.IDvisiteur,
+                f.mois,
+                f.nbrJustificatifs,
+                f.montantValide,
+                f.dateModif,
+                CONCAT(v.NOM, \' \', v.PRENOM) AS nomVisiteur,
+                fhf.libelle AS libelleHorsForfait,
+                e.libelle   AS libelleEtat
+            FROM fichefrais f
+            JOIN visiteur        v   ON f.IDvisiteur             = v.ID
+            JOIN fraishorsforfait fhf ON f.idLigneFraisHorsForfait = fhf.ID
+            JOIN etat            e   ON f.idEtat                 = e.ID
+        ');
+        return $st->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     // Fiches d'un visiteur spécifique
     public static function findByVisiteur(int $idVisiteur): array
     {
         $pdo = Database::get();
-        $st  = $pdo->prepare('SELECT 
-            FicheFrais.idVisiteur,
-            FicheFrais.mois,
-            FicheFrais.nbrJustificatifs,
-            FicheFrais.montantValide,
-            FicheFrais.dateModif,
-            FraisHorsForfait.libelle AS libelleHorsForfait,
-            Etat.libelle AS libelleEtat
-            FROM FicheFrais
-            JOIN FraisHorsForfait ON FicheFrais.idLigneFraisHorsForfait = FraisHorsForfait.id
-            JOIN Etat ON FicheFrais.idEtat = Etat.id
-            WHERE FicheFrais.idVisiteur = ?');
+        $st  = $pdo->prepare('
+            SELECT
+                CONCAT(v.NOM, \' \', v.PRENOM) AS nomVisiteur,
+                f.IDvisiteur,
+                f.mois,
+                f.nbrJustificatifs,
+                f.montantValide,
+                f.dateModif,
+                lff.quantite,
+                ff.libelle   AS libelleForfait,
+                ff.montant   AS montantForfait,
+                fhf.libelle  AS libelleHorsForfait,
+                e.libelle    AS libelleEtat
+            FROM fichefrais f
+            JOIN visiteur         v   ON f.IDvisiteur             = v.ID
+            JOIN etat             e   ON f.idEtat                 = e.ID
+            JOIN fraishorsforfait  fhf ON f.idLigneFraisHorsForfait = fhf.ID
+            JOIN lignefraisforfait lff ON f.IDvisiteur = lff.IDvisiteur
+                                      AND f.mois       = lff.mois
+            JOIN fraisforfait      ff  ON lff.IDfraisforfait       = ff.ID
+            WHERE f.IDvisiteur = ?
+        ');
         $st->execute([$idVisiteur]);
-        return $st->fetchAll();
+        return $st->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public static function findById(int $idvisiteur, int $mois): ?array
-    {
-        $pdo = Database::get();
-        $st  = $pdo->prepare('SELECT 
-            FicheFrais.idVisiteur,
-            FicheFrais.mois,
-            FicheFrais.nbrJustificatifs,
-            FicheFrais.montantValide,
-            FicheFrais.dateModif,
-            FraisHorsForfait.libelle AS libelleHorsForfait,
-            Etat.libelle AS libelleEtat
-            FROM FicheFrais
-            JOIN FraisHorsForfait ON FicheFrais.idLigneFraisHorsForfait = FraisHorsForfait.id
-            JOIN Etat ON FicheFrais.idEtat = Etat.id
-            WHERE FicheFrais.idVisiteur = :idV AND FicheFrais.mois = :mois');
-        $st->execute(['idV' => $idvisiteur, 'mois' => $mois]);
-        $row = $st->fetch();
-        return $row ?: null;
-    }
+    // Une fiche par visiteur + mois
+  public static function findById(int $idvisiteur, int $mois): ?array
+{
+    $pdo = Database::get();
 
-    // Création complète avec tous les champs
+    // Infos générales de la fiche
+    $st = $pdo->prepare('
+        SELECT
+            f.IDvisiteur,
+            f.mois,
+            f.nbrJustificatifs,
+            f.montantValide,
+            f.dateModif,
+            CONCAT(v.NOM, \' \', v.PRENOM) AS nomVisiteur,
+            fhf.libelle  AS libelleHorsForfait,
+            fhf.montant  AS montantHorsForfait,
+            e.libelle    AS libelleEtat
+        FROM fichefrais f
+        JOIN visiteur        v   ON f.IDvisiteur             = v.ID
+        JOIN fraishorsforfait fhf ON f.idLigneFraisHorsForfait = fhf.ID
+        JOIN etat            e   ON f.idEtat                 = e.ID
+        WHERE f.IDvisiteur = :idV AND f.mois = :mois
+    ');
+    $st->execute(['idV' => $idvisiteur, 'mois' => $mois]);
+    $fiche = $st->fetch(\PDO::FETCH_ASSOC);
+    if (!$fiche) return null;
+
+    // Lignes forfait liées
+    $st2 = $pdo->prepare('
+        SELECT
+            ff.libelle  AS libelleForfait,
+            ff.montant  AS montantForfait,
+            lff.quantite
+        FROM lignefraisforfait lff
+        JOIN fraisforfait ff ON lff.IDfraisforfait = ff.ID
+        WHERE lff.IDvisiteur = :idV AND lff.mois = :mois
+    ');
+    $st2->execute(['idV' => $idvisiteur, 'mois' => $mois]);
+    $fiche['lignesForfait'] = $st2->fetchAll(\PDO::FETCH_ASSOC);
+
+    return $fiche;
+}
+    // Création complète
     public static function createFull(
-        int $idVisiteur,
-        int $mois,
-        int $nbrJustificatifs,
-        float $montantValide,
+        int    $idVisiteur,
+        int    $idFraisForfait,
+        int    $quantite,
+        int    $idLigneFraisHorsForfait,
         string $dateModif,
-        int $idLigneFraisHorsForfait,
-        int $idEtat
+        int    $nbrJustificatifs,
+        int    $idEtat
     ): void {
-        $pdo = Database::get();
-        $st  = $pdo->prepare('INSERT INTO ficheFrais 
-            (idVisiteur, mois, nbrJustificatifs, montantValide, dateModif, idLigneFraisHorsForfait, idEtat) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)');
-        $st->execute([$idVisiteur, $mois, $nbrJustificatifs, $montantValide, $dateModif, $idLigneFraisHorsForfait, $idEtat]);
-    }
+        $pdo  = Database::get();
+        $mois = (int)date('Ym');
 
-    // Création minimale (ancienne méthode conservée)
-    public static function create(string $visiteur, string $mois): int
-    {
-        $pdo = Database::get();
-        $st  = $pdo->prepare('INSERT INTO ficheFrais (idVisiteur, mois, nbrJustificatifs, montantValide, dateModif, idLigneFraisHorsForfait, idEtat) VALUES (?,?,0,0,NOW(),1,1)');
-        $st->execute([$visiteur, $mois]);
-        return (int)$pdo->lastInsertId();
-    }
+        // 1. Insérer la fiche frais
+       /* $st = $pdo->prepare('
+            INSERT INTO fichefrais
+                (IDvisiteur, mois, nbrJustificatifs, montantValide, dateModif, idLigneFraisHorsForfait, idEtat)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ');
+        $st->execute([$idVisiteur, $mois, $nbrJustificatifs, $montantValide, $dateModif, $idLigneFraisHorsForfait, $idEtat]);
+
+        // 2. Insérer la ligne forfait liée
+        $st2 = $pdo->prepare('
+            INSERT INTO lignefraisforfait (IDvisiteur, mois, IDfraisforfait, quantite)
+            VALUES (?, ?, ?, ?)
+        ');
+        $st2->execute([$idVisiteur, $mois, $idFraisForfait, $quantite]);
+        */
+        // Montant frais forfait
+        $st0 = $pdo->prepare('SELECT montant FROM fraisforfait WHERE ID = ?');
+        $st0->execute([$idFraisForfait]);
+        $montantForfait = $st0->fetchColumn();
+
+        // Montant frais hors forfait
+        $st1 = $pdo->prepare('SELECT montant FROM fraishorsforfait WHERE ID = ?');
+        $st1->execute([$idLigneFraisHorsForfait]);
+        $montantHorsForfait = $st1->fetchColumn();
+
+        // Calcul
+        $montantValide = ($montantForfait * $quantite) + $montantHorsForfait;
+
+         $st = $pdo->prepare('
+            INSERT INTO fichefrais
+                (IDvisiteur, idLigneFraisHorsForfait, dateModif,  nbrJustificatifs, idEtat, montantValide, mois)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ');
+        $st->execute([$idVisiteur, $idLigneFraisHorsForfait, $dateModif, $nbrJustificatifs, 8, $montantValide, $mois]);
+
+        // 2. Insérer la ligne forfait liée
+        $st2 = $pdo->prepare('
+            INSERT INTO lignefraisforfait (IDvisiteur, IDfraisforfait, quantite,mois)
+            VALUES (?, ?, ?, ?)
+        ');
+        $st2->execute([$idVisiteur, $idFraisForfait, $quantite, $mois]);
+        }
 
     public static function update(string $idvisiteur, string $mois, string $nbrJustificatifs, string $montantValide, string $dateModif): bool
     {
         $pdo = Database::get();
-        $st  = $pdo->prepare('UPDATE FicheFrais SET nbrJustificatifs = ?, montantValide = ?, dateModif = ? WHERE idVisiteur = ? AND mois = ?');
+        $st  = $pdo->prepare('
+            UPDATE fichefrais
+            SET nbrJustificatifs = ?, montantValide = ?, dateModif = ?
+            WHERE IDvisiteur = ? AND mois = ?
+        ');
         return $st->execute([$nbrJustificatifs, $montantValide, $dateModif, $idvisiteur, $mois]);
     }
 
-    public static function delete(int $id): bool
+    // Suppression par clé composite (IDvisiteur + mois)
+    public static function delete(int $idvisiteur, int $mois): bool
     {
         $pdo = Database::get();
-        $st  = $pdo->prepare('DELETE FROM ficheFrais WHERE idVisiteur = ?');
-        return $st->execute([$id]);
-    }
-
-    public static function validate(string $idvisiteur, string $mois): bool
-    {
-        return self::setEtat($idvisiteur, $mois, 3);
+        $st  = $pdo->prepare('DELETE FROM fichefrais WHERE IDvisiteur = ? AND mois = ?');
+        return $st->execute([$idvisiteur, $mois]);
     }
 
     public static function setEtat(string $idvisiteur, string $mois, int $idEtat): bool
     {
         $pdo = Database::get();
-        $st  = $pdo->prepare('UPDATE FicheFrais SET idEtat = ?, dateModif = NOW() WHERE idVisiteur = ? AND mois = ?');
+        $st  = $pdo->prepare('UPDATE fichefrais SET idEtat = ?, dateModif = NOW() WHERE IDvisiteur = ? AND mois = ?');
         return $st->execute([$idEtat, $idvisiteur, $mois]);
     }
 }

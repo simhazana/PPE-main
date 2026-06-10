@@ -61,7 +61,7 @@ final class VisiteurController extends Controller
 
  public function create(): void
     {
-        if (empty($_SESSION['uid'])) $this->redirect('/');
+       // if (empty($_SESSION['uid'])) $this->redirect('/');
 
         $this->render('visiteur/create', [
             'title'   => 'Créer un visiteur',
@@ -84,7 +84,7 @@ final class VisiteurController extends Controller
 
     public function store(): void
 {
-    if (empty($_SESSION['uid'])) $this->redirect('/');
+//if (empty($_SESSION['uid'])) $this->redirect('/');
 
     $nom = trim($_POST['nom'] ?? '');
     $prenom = trim($_POST['prenom'] ?? '');

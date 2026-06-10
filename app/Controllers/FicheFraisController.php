@@ -6,6 +6,7 @@ use Models\FicheFrais;
 use Models\Visiteur;
 use Models\Etat;
 use Models\FraisHorsForfait;
+use Models\FraisForfait;
 
 final class FicheFraisController extends Controller
 {
@@ -67,6 +68,7 @@ final class FicheFraisController extends Controller
             'visiteurs'        => Visiteur::findAll(),
             'etats'            => Etat::findAll(),
             'fraisHorsForfaits'=> FraisHorsForfait::findAll(),
+            'fraisForfaits'=> FraisForfait::findAll(),
         ]);
         unset($_SESSION['flash'], $_SESSION['old'], $_SESSION['errors']);
     }
@@ -78,38 +80,44 @@ final class FicheFraisController extends Controller
         $visiteur         = trim($_POST['visiteur'] ?? '');
         $mois             = trim($_POST['mois'] ?? '');
         $nbrJustificatifs = trim($_POST['nbrJustificatifs'] ?? '');
+        $quantite         = trim($_POST['quantite'] ?? '');
         $montantValide    = trim($_POST['montantValide'] ?? '');
         $dateModif        = trim($_POST['dateModif'] ?? '');
         $fraisHorsForfait = trim($_POST['fraishorsforfait'] ?? '');
+        $fraisForfait     = trim($_POST['fraisforfait'] ?? '');
         $etat             = trim($_POST['etat'] ?? '');
 
         $errors = [];
 
         if ($visiteur === '')         $errors['visiteur']         = 'Le visiteur est obligatoire.';
-        if ($mois === '' || !preg_match('/^[0-9]{6}$/', $mois))
-                                      $errors['mois']             = 'Le mois est obligatoire (format AAAAMM).';
         if ($nbrJustificatifs === '') $errors['nbrJustificatifs'] = 'Le nombre de justificatifs est obligatoire.';
-        if ($montantValide === '')    $errors['montantValide']    = 'Le montant est obligatoire.';
+        if ($quantite === '')         $errors['quantite']         = 'La quantité est obligatoire.';
         if ($dateModif === '')        $errors['dateModif']        = 'La date est obligatoire.';
         if ($fraisHorsForfait === '') $errors['fraishorsforfait'] = 'Le frais hors forfait est obligatoire.';
-        if ($etat === '')             $errors['etat']             = "L'état est obligatoire.";
+        if ($fraisForfait === '') $errors['fraisforfait'] = 'Le frais hors forfait est obligatoire.';
+
 
         if (!empty($errors)) {
             $_SESSION['errors'] = $errors;
-            $_SESSION['old']    = compact('visiteur','mois','nbrJustificatifs','montantValide','dateModif','fraisHorsForfait','etat');
+            $_SESSION['old']    = compact('visiteur','fraisForfait', 'quantite', 'fraisHorsForfait','dateModif', 'nbrJustificatifs');
             $_SESSION['flash']  = 'Merci de corriger les erreurs.';
             $this->redirect('/fichefrais/create');
         }
 
         try {
-            FicheFrais::createFull($visiteur, $mois, $nbrJustificatifs, $montantValide, $dateModif, $fraisHorsForfait, $etat);
+            FicheFrais::createFull($visiteur,  $fraisForfait, $quantite, $fraisHorsForfait, $dateModif, $nbrJustificatifs, 8);
             $_SESSION['flash'] = 'Fiche frais créée avec succès.';
             $this->redirect('/fichefrais');
-        } catch (\Throwable $e) {
-            error_log($e->getMessage());
-            $_SESSION['flash'] = 'Impossible de créer la fiche frais.';
-            $this->redirect('/fichefrais');
-        }
+        }catch (\Throwable $e) {
+  error_log($e->getMessage());
+    if (str_contains($e->getMessage(), '1062')) {
+        $_SESSION['flash'] = 'Une fiche frais existe déjà pour ce visiteur ce mois-ci.';
+        $this->redirect('/fichefrais/create');
+        return;
+    }
+    $_SESSION['flash'] = 'Impossible de créer la fiche frais.';
+    $this->redirect('/fichefrais');
+}
     }
 
     public function edit($id, $mois): void

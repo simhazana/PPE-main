@@ -58,7 +58,6 @@ $isCompta = $role === 'Comptable';
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Libellé</th>
                     <th>Montant</th>
                     <th>Date</th>
@@ -68,12 +67,10 @@ $isCompta = $role === 'Comptable';
             <tbody>
                 <?php foreach ($fraisHorsForfait as $frais): ?>
                     <tr>
-                        <td><?= htmlspecialchars((string)$frais['id']) ?></td>
                         <td><?= htmlspecialchars((string)$frais['libelle']) ?></td>
                         <td><?= htmlspecialchars((string)$frais['montant']) ?></td>
                         <td><?= htmlspecialchars((string)$frais['date']) ?></td>
                         <td class="actions">
-                            <a href="./fraisHorsForfait/<?= urlencode($frais['id']) ?>">Voir</a>
                             <a href="./fraisHorsForfait/<?= urlencode($frais['id']) ?>/edit">Modifier</a>
                             <?php if ($isCompta): ?>
                                 <form action="./fraisHorsForfait/<?= urlencode($frais['id']) ?>/delete"

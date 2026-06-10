@@ -83,11 +83,8 @@ $nomConnecte = trim(($_SESSION['prenom'] ?? '') . ' ' . ($_SESSION['nom'] ?? '')
                 <tr>
                     <th>Visiteur</th>
                     <th>Mois</th>
-                    <th>Nb Justificatifs</th>
                     <th>Montant Validé</th>
-                    <th>Date Modif</th>
-                    <th>Libellé Hors Forfait</th>
-                    <th>État</th>
+                    <th></th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -97,28 +94,25 @@ $nomConnecte = trim(($_SESSION['prenom'] ?? '') . ' ' . ($_SESSION['nom'] ?? '')
                         <!-- Colonne Visiteur -->
                         <td>
                             <?php if ($isCompta): ?>
-                                <?= htmlspecialchars((string)($fiche['nomVisiteur'] ?? $fiche['idVisiteur'])) ?>
+                                <?= htmlspecialchars((string)($fiche['nomVisiteur'] ?? $fiche['IDvisiteur'])) ?>
                             <?php else: ?>
                                 <?= htmlspecialchars($nomConnecte) ?>
                             <?php endif; ?>
                         </td>
                         <td><?= htmlspecialchars((string)$fiche['mois']) ?></td>
-                        <td><?= htmlspecialchars((string)$fiche['nbrJustificatifs']) ?></td>
                         <td><?= htmlspecialchars((string)$fiche['montantValide']) ?></td>
-                        <td><?= htmlspecialchars((string)$fiche['dateModif']) ?></td>
-                        <td><?= htmlspecialchars((string)$fiche['libelleHorsForfait']) ?></td>
-                        <td id="etat-<?= urlencode($fiche['idVisiteur']) ?>-<?= urlencode($fiche['mois']) ?>">
-                            <?= htmlspecialchars((string)$fiche['libelleEtat']) ?>
+                        <td id="etat-<?= urlencode($fiche['IDvisiteur']) ?>-<?= urlencode($fiche['mois']) ?>">
+                        
                         </td>
 
                         <!-- Colonne Action -->
                         <td class="actions">
                             <?php if ($isCompta): ?>
                                 <!-- Comptable : liste déroulante -->
-                                <a href="./fichefrais/<?= urlencode($fiche['idVisiteur']) ?>/<?= urlencode($fiche['mois']) ?>">Voir</a>
-                                <a href="./fichefrais/<?= urlencode($fiche['idVisiteur']) ?>/<?= urlencode($fiche['mois']) ?>/edit">Modifier</a>
+                                <a href="./fichefrais/<?= urlencode($fiche['IDvisiteur']) ?>/<?= urlencode($fiche['mois']) ?>">Voir</a>
+                                <a href="./fichefrais/<?= urlencode($fiche['IDvisiteur']) ?>/<?= urlencode($fiche['mois']) ?>/edit">Modifier</a>
                                 <select class="action-select"
-                                    data-id="<?= urlencode($fiche['idVisiteur']) ?>"
+                                    data-id="<?= urlencode($fiche['IDvisiteur']) ?>"
                                     data-mois="<?= urlencode($fiche['mois']) ?>"
                                     onchange="changerEtat(this)">
                                     <option value="">-- Changer état --</option>
@@ -130,8 +124,8 @@ $nomConnecte = trim(($_SESSION['prenom'] ?? '') . ' ' . ($_SESSION['nom'] ?? '')
                                 </select>
                             <?php else: ?>
                                 <!-- Visiteur : Voir + Modifier uniquement -->
-                                <a href="./fichefrais/<?= urlencode($fiche['idVisiteur']) ?>/<?= urlencode($fiche['mois']) ?>">Voir</a>
-                                <a href="./fichefrais/<?= urlencode($fiche['idVisiteur']) ?>/<?= urlencode($fiche['mois']) ?>/edit">Modifier</a>
+                                <a href="./fichefrais/<?= urlencode($fiche['IDvisiteur']) ?>/<?= urlencode($fiche['mois']) ?>">Voir</a>
+                                <a href="./fichefrais/<?= urlencode($fiche['IDvisiteur']) ?>/<?= urlencode($fiche['mois']) ?>/edit">Modifier</a>
                             <?php endif; ?>
                         </td>
                     </tr>

@@ -39,7 +39,6 @@
         <h1 style="margin:0;">Liste des États</h1>
         <a class="button" href="./dashboard">Dashboard</a>
         <a class="button" href="./logout">Se déconnecter</a>
-        <a class="button" href="./fraisForfait">Frais forfait</a>
     </div>
 
     <a class="button add" href="./etat/create">➕ Ajouter un état</a>
@@ -62,7 +61,7 @@
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
+                    
                     <th>Libellé</th>
                     <th>Actions</th>
                 </tr>
@@ -70,10 +69,9 @@
             <tbody>
                 <?php foreach ($etatsAffiches as $etat): ?>
                     <tr>
-                        <td><?= htmlspecialchars((string)$etat['id']) ?></td>
+                        
                         <td><?= htmlspecialchars((string)$etat['libelle']) ?></td>
                         <td class="actions">
-                            <a href="./etat/<?= urlencode($etat['id']) ?>">Voir</a>
                             <a href="./etat/<?= urlencode($etat['id']) ?>/edit">Modifier</a>
                             <form action="./etat/<?= urlencode($etat['id']) ?>/delete"
                                   method="post" style="display:inline"

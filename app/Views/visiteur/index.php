@@ -142,7 +142,6 @@
         <h1 style="margin:0;">Liste des Visiteurs</h1>
         <a class="button" href="./dashboard">Dashboard</a>
         <a class="button" href="./logout">Se déconnecter</a>
-        <a class="button" href="./fraisForfait">Frais forfait</a>
     </div>
 
     <a class="button" href="./visiteur/create">➕ Ajouter un visiteur</a>
@@ -164,9 +163,8 @@
                     <th>Ville</th>
                     <th>Cp</th>
                     <th>Date d'embauche</th>
-                    <th>Login</th>
-                    <th>Mdp</th>
-                    <th>role</th>
+                    <th>Role</th>
+                    <th>Action</th>
 
 
                 </tr>
@@ -181,8 +179,6 @@
                         <td><?= htmlspecialchars((string)$vis['ville']) ?></td>
                         <td><?= htmlspecialchars((string)$vis['cp']) ?></td>
                         <td><?= htmlspecialchars((string)$vis['date_embauche']) ?></td>
-                        <td><?= htmlspecialchars((string)$vis['login']) ?></td>
-                        <td><?= htmlspecialchars((string)$vis['mdp']) ?></td>
                         <td><?= htmlspecialchars((string)$vis['role']) ?></td>
 
                         <td class="actions">

@@ -32,3 +32,8 @@ Avec XAMPP : place le projet dans le dossier htdocs, puis ouvre
 http://localhost/ppe/public/etat
 
 
+
+Pour acceder au site voici le lien : https://gsb-gestion-des-frais-sb.euroforma.site/
+
+
+voici le github ionos :https://github.com/simhazana/GSB_appli_frais_ionos

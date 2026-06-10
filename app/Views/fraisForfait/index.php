@@ -152,24 +152,26 @@
 
     <?php if (empty($fraisForfait)): ?>
         <p>Aucun état trouvé.</p>
+
     <?php else: ?>
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Libellé</th>
                     <th>Montant</th>
+                    <?php if (($_SESSION['role'] ?? '') === 'Comptable'): ?>
                     <th>Action</th>
+                    <?php endif; ?>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($fraisForfait as $frais): ?>
                     <tr>
-                      <td><?= htmlspecialchars((string)$frais['id']) ?></td>
                         <td><?= htmlspecialchars((string)$frais['libelle']) ?></td>
                         <td><?= htmlspecialchars((string)$frais['montant']) ?></td> 
-                                     <td class="actions">
-                            <a href="./fraisForfait/<?= urlencode($frais['id']) ?>">Voir</a>
+                        <?php if (($_SESSION['role'] ?? '') === 'Comptable'): ?>             
+                        <td class="actions">
+
                             <a href="./fraisForfait/<?= urlencode($frais['id']) ?>/edit">Modifier</a>
                              <form action="./fraisForfait/<?= urlencode($frais['id']) ?>/delete"
                              method="post"
@@ -185,6 +187,8 @@
 
 </a></td>
                     </tr>
+                <?php endif; ?>
+                </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
@@ -192,4 +196,6 @@
 </body>
 </html>
 
-                <!--    -->
+                    
+
+   
