@@ -11,28 +11,37 @@ use Models\FraisForfait;
 final class FicheFraisController extends Controller
 {
     public function index(): void
-    {
-        $this->requireAuth();
+{
+    $this->requireAuth();
 
-        try {
-            if ($this->isComptable()) {
-                $ficheFrais = FicheFrais::findAll();
-            } else {
-                $ficheFrais = FicheFrais::findByVisiteur((int)$_SESSION['uid']);
-            }
-        } catch (\Throwable $e) {
-            error_log($e->getMessage());
-            $_SESSION['flash'] = 'Impossible de charger les fiches frais.';
-            $ficheFrais = [];
+    $ficheFrais = [];
+    $etats      = []; // ← initialisation AVANT le try
+
+    try {
+        if ($this->isComptable()) {
+            $ficheFrais = FicheFrais::findAll();
+        } else {
+            $ficheFrais = FicheFrais::findByVisiteur((int)$_SESSION['uid']);
         }
-
-        $this->render('fichefrais/index', [
-            'title'      => 'Liste des fiches frais',
-            'ficheFrais' => $ficheFrais,
-            'message'    => $_SESSION['flash'] ?? '',
-        ]);
-        unset($_SESSION['flash']);
+    } catch (\Throwable $e) {
+        error_log($e->getMessage());
+        $_SESSION['flash'] = 'Impossible de charger les fiches frais.';
     }
+
+    try {
+        $etats = \Models\Etat::findAll();
+    } catch (\Throwable $e) {
+        error_log($e->getMessage()); // ← active ça pour voir si Etat::findAll() plante
+    }
+
+    $this->render('fichefrais/index', [
+        'title'      => 'Liste des fiches frais',
+        'ficheFrais' => $ficheFrais,
+        'etats'      => $etats,
+        'message'    => $_SESSION['flash'] ?? '',
+    ]);
+    unset($_SESSION['flash']);
+}
 
     public function show($idvisiteur, $mois): void
     {
@@ -120,6 +129,19 @@ final class FicheFraisController extends Controller
 }
     }
 
+    public function setEtat(string $idvisiteur, string $mois, int $idEtat): void
+{
+    $this->requireComptable();
+    try {
+        $ok = FicheFrais::setEtat($idvisiteur, $mois, $idEtat);
+        $_SESSION['flash'] = $ok ? 'État mis à jour.' : "Impossible de changer l'état.";
+    } catch (\Throwable $e) {
+        error_log($e->getMessage());
+        $_SESSION['flash'] = "Erreur technique lors du changement d'état.";
+    }
+    $this->redirect('/fichefrais');
+}
+
     public function edit($id, $mois): void
     {
         $this->requireAuth();
@@ -182,18 +204,45 @@ final class FicheFraisController extends Controller
         }
     }
 
-    public function delete($id): void
-    {
-        $this->requireComptable();
-        $id = (int)$id;
-        try {
-            $ok = FicheFrais::delete($id);
-            $_SESSION['flash'] = $ok ? 'Fiche frais supprimée.' : 'Impossible de supprimer.';
-        } catch (\Throwable $e) {
-            $_SESSION['flash'] = 'Erreur lors de la suppression.';
+public function delete($idvisiteur, $mois): void
+{
+    $this->requireAuth();
+
+    $idvisiteur = (int)$idvisiteur;
+    $mois       = (int)$mois;
+
+    // Si pas comptable, vérifier que c'est sa propre fiche ET qu'elle est encore "Créé"
+    if (!$this->isComptable()) {
+        if ($idvisiteur !== (int)$_SESSION['uid']) {
+            $_SESSION['flash'] = "Action non autorisée.";
+            $this->redirect('/fichefrais');
+            return;
         }
-        $this->redirect('/fichefrais');
+
+        try {
+            $fiche = FicheFrais::findById($idvisiteur, $mois);
+            if (!$fiche || $fiche['libelleEtat'] !== 'Créé') {
+                $_SESSION['flash'] = "Vous ne pouvez supprimer que les fiches à l'état « Créé ».";
+                $this->redirect('/fichefrais');
+                return;
+            }
+        } catch (\Throwable $e) {
+            error_log($e->getMessage());
+            $_SESSION['flash'] = "Erreur lors de la vérification.";
+            $this->redirect('/fichefrais');
+            return;
+        }
     }
+
+    try {
+        $ok = FicheFrais::delete($idvisiteur, $mois);
+        $_SESSION['flash'] = $ok ? 'Fiche frais supprimée.' : 'Impossible de supprimer.';
+    } catch (\Throwable $e) {
+        error_log($e->getMessage());
+        $_SESSION['flash'] = 'Erreur lors de la suppression.';
+    }
+    $this->redirect('/fichefrais');
+}
 
     // ─── Actions de changement d'état (comptable uniquement) ───────────────
 

@@ -79,10 +79,8 @@ final class Visiteur
         $cp, 
         $date_embauche, 
         $login,
-        $id,
-        $role
-        /*$mdp*/
-        
+        $role,
+        $id,        
         ]);
 }
 

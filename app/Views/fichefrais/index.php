@@ -84,14 +84,13 @@ $nomConnecte = trim(($_SESSION['prenom'] ?? '') . ' ' . ($_SESSION['nom'] ?? '')
                     <th>Visiteur</th>
                     <th>Mois</th>
                     <th>Montant Validé</th>
-                    <th></th>
+                    <th>Etat</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($ficheFrais as $fiche): ?>
                     <tr>
-                        <!-- Colonne Visiteur -->
                         <td>
                             <?php if ($isCompta): ?>
                                 <?= htmlspecialchars((string)($fiche['nomVisiteur'] ?? $fiche['IDvisiteur'])) ?>
@@ -101,33 +100,44 @@ $nomConnecte = trim(($_SESSION['prenom'] ?? '') . ' ' . ($_SESSION['nom'] ?? '')
                         </td>
                         <td><?= htmlspecialchars((string)$fiche['mois']) ?></td>
                         <td><?= htmlspecialchars((string)$fiche['montantValide']) ?></td>
-                        <td id="etat-<?= urlencode($fiche['IDvisiteur']) ?>-<?= urlencode($fiche['mois']) ?>">
-                        
-                        </td>
+                        <td><?= htmlspecialchars((string)$fiche['libelleEtat']) ?></td>
 
-                        <!-- Colonne Action -->
                         <td class="actions">
-                            <?php if ($isCompta): ?>
-                                <!-- Comptable : liste déroulante -->
-                                <a href="./fichefrais/<?= urlencode($fiche['IDvisiteur']) ?>/<?= urlencode($fiche['mois']) ?>">Voir</a>
-                                <a href="./fichefrais/<?= urlencode($fiche['IDvisiteur']) ?>/<?= urlencode($fiche['mois']) ?>/edit">Modifier</a>
-                                <select class="action-select"
-                                    data-id="<?= urlencode($fiche['IDvisiteur']) ?>"
-                                    data-mois="<?= urlencode($fiche['mois']) ?>"
-                                    onchange="changerEtat(this)">
-                                    <option value="">-- Changer état --</option>
-                                    <option value="valide">Validé</option>
-                                    <option value="refuse">Refusé</option>
-                                    <option value="cloture">Clôturé</option>
-                                    <option value="rembourse">Remboursé</option>
-                                    <option value="delete">Supprimer</option>
-                                </select>
-                            <?php else: ?>
-                                <!-- Visiteur : Voir + Modifier uniquement -->
-                                <a href="./fichefrais/<?= urlencode($fiche['IDvisiteur']) ?>/<?= urlencode($fiche['mois']) ?>">Voir</a>
-                                <a href="./fichefrais/<?= urlencode($fiche['IDvisiteur']) ?>/<?= urlencode($fiche['mois']) ?>/edit">Modifier</a>
-                            <?php endif; ?>
-                        </td>
+    <?php
+        $etatsVerrouilles = ['Validé', 'Remboursé', 'Clôturé', 'Refusé'];
+        $estVerrouille    = !$isCompta && in_array($fiche['libelleEtat'], $etatsVerrouilles);
+        $peutSupprimer    = $isCompta || ($fiche['libelleEtat'] === 'Créé');
+    ?>
+
+    <a href="./fichefrais/<?= urlencode($fiche['IDvisiteur']) ?>/<?= urlencode($fiche['mois']) ?>">Voir</a>
+
+    <?php if (!$estVerrouille): ?>
+        <a href="./fichefrais/<?= urlencode($fiche['IDvisiteur']) ?>/<?= urlencode($fiche['mois']) ?>/edit">Modifier</a>
+
+        <?php if ($isCompta): ?>
+            <select class="action-select"
+                data-id="<?= urlencode($fiche['IDvisiteur']) ?>"
+                data-mois="<?= urlencode($fiche['mois']) ?>"
+                onchange="changerEtat(this)">
+                <option value="">-- Changer état --</option>
+                <?php foreach ($etats ?? [] as $etat): ?>
+                    <option value="setetat-<?= (int)$etat['id'] ?>">
+                        <?= htmlspecialchars($etat['libelle']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        <?php endif; ?>
+    <?php endif; ?>
+
+    <?php if ($peutSupprimer): ?>
+        <form action="./fichefrais/<?= urlencode($fiche['IDvisiteur']) ?>/<?= urlencode($fiche['mois']) ?>/delete"
+              method="post"
+              style="display:inline"
+              onsubmit="return confirm('Supprimer cette fiche frais ? Cette action est définitive.');">
+            <button type="submit">Supprimer</button>
+        </form>
+    <?php endif; ?>
+</td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -149,7 +159,6 @@ $nomConnecte = trim(($_SESSION['prenom'] ?? '') . ' ' . ($_SESSION['nom'] ?? '')
             }
         }
 
-        // Créer un formulaire dynamique et le soumettre
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = './fichefrais/' + id + '/' + mois + '/' + action;

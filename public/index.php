@@ -13,6 +13,7 @@ use Core\Router;
 $router = new Router();
 
 // Routes
+$router->post('#^/fichefrais/([^/]+)/([^/]+)/setetat-([0-9]+)$#', [Controllers\FicheFraisController::class, 'setEtat']);
 $router->get ('/',           [Controllers\AuthController::class, 'login']);
 $router->get ('/index.php',  [Controllers\AuthController::class, 'login']); // fallback si /index.php est appelé
 $router->post('/login',      [Controllers\AuthController::class, 'doLogin']);
@@ -321,6 +322,14 @@ if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fichefrais/([^/]+)/([^/]+)
 if (preg_match('#^' . preg_quote($scriptDir, '#') . '/fichefrais/([^/]+)/([^/]+)$#', $_SERVER['REQUEST_URI'] ?? '', $m)
     || preg_match('#^/fichefrais/([^/]+)/([^/]+)$#', $requestPath, $m)) {
     (new \Controllers\FicheFraisController)->show((int)$m[1],(int)$m[2]);
+    exit;
+}
+if (preg_match('#^/fichefrais/([^/]+)/([^/]+)/setetat-([0-9]+)$#', $requestPath, $m)) {
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+        (new \Controllers\FicheFraisController)->setEtat($m[1], $m[2], (int)$m[3]);
+    } else {
+        header('Location: /fichefrais');
+    }
     exit;
 }
 

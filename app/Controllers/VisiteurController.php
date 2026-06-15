@@ -244,6 +244,7 @@ public function update($id): void
     $cp = trim($_POST['cp'] ?? '');
     $date_embauche = trim($_POST['date_embauche'] ?? '');
     $login = trim($_POST['login'] ?? '');
+    $role  = trim($_POST['role'] ?? '');
     //$mdp = trim($_POST['mdp'] ?? '');
 
     $errors = [];
@@ -306,7 +307,8 @@ public function update($id): void
             $ville,
             $cp,
             $date_embauche,
-            $login
+            $login,
+            $role
             );
 
         $_SESSION['flash'] = "Visiteur modifié avec succès.";
