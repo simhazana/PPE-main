@@ -217,7 +217,8 @@ public function edit($id): void
     'ville' => $visiteur['VILLE'],
     'cp' => $visiteur['CP'],
     'date_embauche' => $visiteur['DATE_EMBAUCHE'],
-    'login' => $visiteur['LOGIN']
+    'login' => $visiteur['LOGIN'], 
+    'role' => $visiteur['ROLE'],
         ];
 
     $this->render('visiteur/edit', [
@@ -278,6 +279,10 @@ public function update($id): void
         $errors['login'] = 'Le login est obligatoire.';
     } 
 
+       if ($role === '') {
+        $errors['role'] = 'Le role est obligatoire.';
+    } 
+
    /* if ($mdp === '') {
         $errors['mdp'] = 'Le mdp est obligatoire.';
     } */
@@ -291,7 +296,8 @@ public function update($id): void
             'ville' => $ville,
             'cp' => $cp,
             'date_embauche' => $date_embauche,
-            'login' => $login
+            'login' => $login,
+            'role' => $role
             ];
 
         $_SESSION['flash'] = "Merci de corriger les erreurs.";
